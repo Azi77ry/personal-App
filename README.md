@@ -1,6 +1,7 @@
 # 💼📆 Money & Event Manager
 
-![Visit site ](https://personal-management-1gsm.onrender.com)
+## 🚀 visit the link 
+(https://personal-management-1gsm.onrender.com)
 
 A comprehensive **web and mobile application** for **personal finance management** and **event scheduling**, featuring professional UI styling, advanced data visualization, and Progressive Web App (PWA) capabilities.
 
