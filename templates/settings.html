@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>User Profile</h5>
+            </div>
+            <div class="card-body">
+                <form id="profile-form">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="user-name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="user-email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Currency</label>
+                        <select class="form-select" id="user-currency">
+                            <option value="USD">US Dollar ($)</option>
+                            <option value="EUR">Euro (€)</option>
+                            <option value="GBP">British Pound (£)</option>
+                            <option value="JPY">Japanese Yen (¥)</option>
+                            <option value="INR">Indian Rupee (₹)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5>Notification Settings</h5>
+            </div>
+            <div class="card-body">
+                <form id="notification-form">
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="email-notifications" checked>
+                        <label class="form-check-label" for="email-notifications">Email Notifications</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="bill-reminders" checked>
+                        <label class="form-check-label" for="bill-reminders">Bill Reminders</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="event-reminders" checked>
+                        <label class="form-check-label" for="event-reminders">Event Reminders</label>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Notification Time</label>
+                        <input type="time" class="form-control" id="notification-time" value="09:00">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h5>Change Password</h5>
+            </div>
+            <div class="card-body">
+                <form id="password-form">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current-password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new-password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5>Data Management</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" id="export-data">Export All Data</button>
+                    <button class="btn btn-outline-secondary" id="import-data">Import Data</button>
+                    <button class="btn btn-outline-danger" id="reset-data">Reset All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile form submission
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Profile updated successfully!');
+    });
+    
+    // Notification form submission
+    document.getElementById('notification-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Notification settings saved!');
+    });
+    
+    // Password form submission
+    document.getElementById('password-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newPass = document.getElementById('new-password').value;
+        const confirmPass = document.getElementById('confirm-password').value;
+        
+        if (newPass !== confirmPass) {
+            alert('Passwords do not match!');
+            return;
+        }
+        
+        alert('Password changed successfully!');
+        document.getElementById('password-form').reset();
+    });
+    
+    // Data management buttons
+    document.getElementById('export-data').addEventListener('click', function() {
+        alert('Data exported successfully!');
+    });
+    
+    document.getElementById('import-data').addEventListener('click', function() {
+        alert('Please select a file to import...');
+    });
+    
+    document.getElementById('reset-data').addEventListener('click', function() {
+        if (confirm('Are you sure you want to reset ALL data? This cannot be undone!')) {
+            alert('All data has been reset.');
+        }
+    });
+});
+</script>
+{% endblock %}

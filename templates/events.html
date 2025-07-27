@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>Add Event</h5>
+            </div>
+            <div class="card-body">
+                <form id="event-form">
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" id="event-title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Start Date/Time</label>
+                        <input type="datetime-local" class="form-control" id="event-start" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">End Date/Time</label>
+                        <input type="datetime-local" class="form-control" id="event-end" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="event-description"></textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="event-recurring">
+                        <label class="form-check-label" for="event-recurring">Recurring Event</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5>Add Task</h5>
+            </div>
+            <div class="card-body">
+                <form id="task-form">
+                    <div class="mb-3">
+                        <label class="form-label">Task Name</label>
+                        <input type="text" class="form-control" id="task-name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="task-due-date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="task-priority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="task-description"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Task</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5>Calendar</h5>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default datetime to now
+    const now = new Date();
+    const nowStr = now.toISOString().slice(0, 16);
+    document.getElementById('event-start').value = nowStr;
+    
+    // Set end time to 1 hour from now
+    const endTime = new Date(now.getTime() + 60 * 60 * 1000);
+    const endStr = endTime.toISOString().slice(0, 16);
+    document.getElementById('event-end').value = endStr;
+    
+    // Set default task date to today
+    const today = now.toISOString().split('T')[0];
+    document.getElementById('task-due-date').value = today;
+    
+    // Event form submission
+    document.getElementById('event-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const eventData = {
+            title: document.getElementById('event-title').value,
+            start: document.getElementById('event-start').value,
+            end: document.getElementById('event-end').value,
+            description: document.getElementById('event-description').value,
+            recurring: document.getElementById('event-recurring').checked
+        };
+        
+        fetch('/api/add_event', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(eventData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Event added successfully!');
+            document.getElementById('event-form').reset();
+            document.getElementById('event-start').value = nowStr;
+            document.getElementById('event-end').value = endStr;
+            // Refresh calendar
+            loadCalendar();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding event');
+        });
+    });
+    
+    // Simple calendar display
+    function loadCalendar() {
+        fetch('/api/get_events')
+            .then(response => response.json())
+            .then(events => {
+                const calendarEl = document.getElementById('calendar');
+                calendarEl.innerHTML = '';
+                
+                if (Object.keys(events).length === 0) {
+                    calendarEl.innerHTML = '<p>No events scheduled</p>';
+                    return;
+                }
+                
+                const eventList = document.createElement('div');
+                eventList.className = 'list-group';
+                
+                Object.values(events).forEach(event => {
+                    const eventItem = document.createElement('div');
+                    eventItem.className = 'list-group-item';
+                    
+                    const startDate = new Date(event.start);
+                    const endDate = new Date(event.end);
+                    
+                    eventItem.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">${event.title}</h5>
+                            <small>${startDate.toLocaleString()} - ${endDate.toLocaleString()}</small>
+                        </div>
+                        <p class="mb-1">${event.description || 'No description'}</p>
+                        ${event.recurring ? '<span class="badge bg-info">Recurring</span>' : ''}
+                    `;
+                    
+                    eventList.appendChild(eventItem);
+                });
+                
+                calendarEl.appendChild(eventList);
+            });
+    }
+    
+    // Initial calendar load
+    loadCalendar();
+});
+</script>
+{% endblock %}

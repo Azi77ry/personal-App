@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5>Financial Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <h6>Income</h6>
+                        <h4 id="total-income">$0</h4>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h6>Expenses</h6>
+                        <h4 id="total-expense">$0</h4>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h6>Balance</h6>
+                        <h4 id="balance">$0</h4>
+                    </div>
+                </div>
+                <canvas id="financeChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5>Upcoming Events</h5>
+            </div>
+            <div class="card-body">
+                <div id="upcoming-events">
+                    <p>No upcoming events</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5>Recent Expenses</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-expenses">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h5>Savings Goals</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Goal Name</label>
+                    <input type="text" class="form-control" id="goal-name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Target Amount</label>
+                    <input type="number" class="form-control" id="goal-amount">
+                </div>
+                <button class="btn btn-primary" id="add-goal">Add Goal</button>
+                <hr>
+                <div id="goals-list">
+                    <p>No goals set</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load financial summary
+    fetch('/api/get_financial_summary')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-income').textContent = '$' + data.total_income.toFixed(2);
+            document.getElementById('total-expense').textContent = '$' + data.total_expense.toFixed(2);
+            document.getElementById('balance').textContent = '$' + data.balance.toFixed(2);
+            
+            // Create chart
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Income', 'Expenses'],
+                    datasets: [{
+                        data: [data.total_income, data.total_expense],
+                        backgroundColor: ['#4bc0c0', '#ff6384']
+                    }]
+                }
+            });
+        });
+    
+    // Load recent expenses
+    fetch('/api/get_expenses')
+        .then(response => response.json())
+        .then(data => {
+            const recentExpenses = Object.values(data).slice(-5).reverse();
+            const tbody = document.getElementById('recent-expenses');
+            
+            if (recentExpenses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">No expenses recorded</td></tr>';
+            } else {
+                tbody.innerHTML = recentExpenses.map(expense => `
+                    <tr>
+                        <td>${expense.date}</td>
+                        <td>${expense.category}</td>
+                        <td>$${expense.amount}</td>
+                    </tr>
+                `).join('');
+            }
+        });
+    
+    // Load upcoming events
+    fetch('/api/get_events')
+        .then(response => response.json())
+        .then(data => {
+            const upcomingEvents = Object.values(data).filter(event => {
+                return new Date(event.start) >= new Date();
+            }).slice(0, 5);
+            
+            const container = document.getElementById('upcoming-events');
+            
+            if (upcomingEvents.length === 0) {
+                container.innerHTML = '<p>No upcoming events</p>';
+            } else {
+                container.innerHTML = upcomingEvents.map(event => `
+                    <div class="mb-2">
+                        <strong>${event.title}</strong>
+                        <p class="mb-0">${new Date(event.start).toLocaleString()}</p>
+                        <small>${event.description}</small>
+                    </div>
+                `).join('');
+            }
+        });
+    
+    // Add goal functionality
+    document.getElementById('add-goal').addEventListener('click', function() {
+        const name = document.getElementById('goal-name').value;
+        const amount = document.getElementById('goal-amount').value;
+        
+        if (name && amount) {
+            const goalsList = document.getElementById('goals-list');
+            const goalItem = document.createElement('div');
+            goalItem.className = 'mb-2 p-2 border rounded';
+            goalItem.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <strong>${name}</strong>
+                    <span>$${amount}</span>
+                </div>
+                <div class="progress mt-1">
+                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                </div>
+            `;
+            
+            if (goalsList.querySelector('p')) {
+                goalsList.innerHTML = '';
+            }
+            
+            goalsList.appendChild(goalItem);
+            
+            // Clear inputs
+            document.getElementById('goal-name').value = '';
+            document.getElementById('goal-amount').value = '';
+        }
+    });
+});
+</script>
+{% endblock %}
