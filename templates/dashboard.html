@@ -12,15 +12,15 @@
                 <div class="row">
                     <div class="col-md-4 text-center">
                         <h6>Income</h6>
-                        <h4 id="total-income" class="text-success">$0</h4>
+                        <h4 id="total-income" class="text-success">Tsh0</h4>
                     </div>
                     <div class="col-md-4 text-center">
                         <h6>Expenses</h6>
-                        <h4 id="total-expense" class="text-danger">$0</h4>
+                        <h4 id="total-expense" class="text-danger">Tsh0</h4>
                     </div>
                     <div class="col-md-4 text-center">
                         <h6>Balance</h6>
-                        <h4 id="balance">$0</h4>
+                        <h4 id="balance">Tsh0</h4>
                     </div>
                 </div>
                 <canvas id="financeChart" height="200"></canvas>
@@ -34,7 +34,7 @@
                 <h5 class="mb-0">Upcoming Events</h5>
                 <a href="/events" class="btn btn-sm btn-light">View All</a>
             </div>
-            <div class="card-body">
+            <div class="card-body"> 
                 <div id="upcoming-events" class="list-group">
                     <div class="text-center py-3">
                         <div class="spinner-border text-primary" role="status">
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Format currency
     function formatCurrency(amount) {
-        return '$' + parseFloat(amount).toFixed(2);
+        return 'Tsh' + parseFloat(amount).toFixed(2);
     }
     
     // Load financial summary
@@ -213,7 +213,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Create chart
                 const ctx = document.getElementById('financeChart').getContext('2d');
-                new Chart(ctx, {
+                if (window.financeChart) {
+                    window.financeChart.destroy();
+                }
+                window.financeChart = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
                         labels: ['Income', 'Expenses'],
@@ -244,15 +247,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 const tbody = document.getElementById('recent-expenses');
-                const expenses = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+                const expenses = Object.values(data).sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at)).slice(0, 5);
                 
                 if (expenses.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3">No expenses recorded</td></tr>';
                 } else {
                     tbody.innerHTML = expenses.map(expense => `
                         <tr>
-                            <td>${new Date(expense.date).toLocaleDateString()}</td>
-                            <td>${expense.category.charAt(0).toUpperCase() + expense.category.slice(1)}</td>
+                            <td>${new Date(expense.date || expense.created_at).toLocaleDateString()}</td>
+                            <td>${expense.category ? expense.category.charAt(0).toUpperCase() + expense.category.slice(1) : 'Uncategorized'}</td>
                             <td class="text-danger">-${formatCurrency(expense.amount)}</td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-outline-danger delete-btn" data-type="expenses" data-id="${Object.keys(data).find(key => data[key] === expense)}">
@@ -275,15 +278,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 const tbody = document.getElementById('recent-incomes');
-                const incomes = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+                const incomes = Object.values(data).sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at)).slice(0, 5);
                 
                 if (incomes.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3">No incomes recorded</td></tr>';
                 } else {
                     tbody.innerHTML = incomes.map(income => `
                         <tr>
-                            <td>${new Date(income.date).toLocaleDateString()}</td>
-                            <td>${income.source}</td>
+                            <td>${new Date(income.date || income.created_at).toLocaleDateString()}</td>
+                            <td>${income.source || 'Unknown'}</td>
                             <td class="text-success">+${formatCurrency(income.amount)}</td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-outline-danger delete-btn" data-type="incomes" data-id="${Object.keys(data).find(key => data[key] === income)}">
@@ -315,21 +318,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (upcomingEvents.length === 0) {
                     container.innerHTML = '<div class="list-group-item">No upcoming events</div>';
                 } else {
-                    container.innerHTML = upcomingEvents.map(event => `
-                        <div class="list-group-item">
-                            <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">${event.title}</h6>
-                                <small>${new Date(event.start).toLocaleDateString()}</small>
+                    container.innerHTML = upcomingEvents.map(event => {
+                        const startDate = new Date(event.start);
+                        const endDate = new Date(event.end);
+                        return `
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">${event.title}</h6>
+                                    <small>${startDate.toLocaleDateString()}</small>
+                                </div>
+                                <p class="mb-1 small">${event.description || 'No description'}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small>${startDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-type="events" data-id="${Object.keys(data).find(key => data[key] === event)}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <p class="mb-1 small">${event.description || 'No description'}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small>${new Date(event.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - ${new Date(event.end).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
-                                <button class="btn btn-sm btn-outline-danger delete-btn" data-type="events" data-id="${Object.keys(data).find(key => data[key] === event)}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
             })
             .catch(error => {
@@ -389,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (name && amount) {
             const goalData = {
                 name: name,
-                amount: amount,
+                target_amount: amount,
                 current_amount: current,
                 target_date: date || null
             };

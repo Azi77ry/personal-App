@@ -1,0 +1,50 @@
+{
+  "profile": {
+    "username": "",
+    "email": "",
+    "email_verified": false
+  },
+  "settings": {
+    "currency": "USD",
+    "notifications": {
+      "email": true,
+      "bills": true,
+      "events": true,
+      "time": "09:00"
+    }
+  },
+  "expenses": {},
+  "incomes": {},
+  "events": {
+    "a5d19520-bb08-4b45-a696-16e281023a18": {
+      "title": "gaming",
+      "start": "2025-08-22T14:52",
+      "end": "2025-08-22T15:52",
+      "description": "",
+      "recurring": false,
+      "recurrence_pattern": null,
+      "created_at": "2025-08-22T14:53:01.390518"
+    }
+  },
+  "budgets": {},
+  "goals": {
+    "25377a0c-c187-4627-9d61-1710e42409a2": {
+      "name": "saving",
+      "target_amount": 5000.0,
+      "current_amount": 1000.0,
+      "target_date": null,
+      "created_at": "2025-08-22T15:17:38.833452"
+    }
+  },
+  "tasks": {
+    "d979e30c-1b02-4096-8bea-86d77c63a4cb": {
+      "name": "home",
+      "due_date": "2025-08-22",
+      "priority": "medium",
+      "description": "",
+      "completed": false,
+      "created_at": "2025-08-22T14:53:10.456910"
+    }
+  },
+  "bills": {}
+}
