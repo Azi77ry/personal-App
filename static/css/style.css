@@ -441,3 +441,67 @@ a {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
+
+/* Custom styles for Money & Event Manager */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.progress {
+    height: 10px;
+    border-radius: 5px;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Custom colors for categories */
+.bg-category-food { background-color: #ff6384; }
+.bg-category-housing { background-color: #36a2eb; }
+.bg-category-transportation { background-color: #ffce56; }
+.bg-category-entertainment { background-color: #4bc0c0; }
+.bg-category-utilities { background-color: #9966ff; }
+.bg-category-health { background-color: #ff9f40; }
+.bg-category-education { background-color: #8ac24a; }
+.bg-category-shopping { background-color: #607d8b; }
+.bg-category-other { background-color: #ff6b6b; }

@@ -6,7 +6,8 @@
     <title>Money & Event Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Add this line to link your custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
@@ -45,6 +46,8 @@
                             <li><a class="dropdown-item" href="/settings">Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            <input type="date" class="form-control" id="goal-date" min="{{ now.strftime('%Y-%m-%d') }}">
+
                         </ul>
                     </li>
                 </ul>
@@ -71,7 +74,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/static/js/app.js"></script>
+    <!-- Add this line to link your custom JS -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

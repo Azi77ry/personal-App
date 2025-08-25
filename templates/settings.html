@@ -20,12 +20,12 @@
                     <div class="mb-3">
                         <label class="form-label">Currency</label>
                         <select class="form-select" id="user-currency">
-                            <option value="USD">US Dollar ($)</option>
-                            <option value="Tsh">Tanzania Shillings (Tsh)</option>
-                            <option value="GBP">British Pound (£)</option>
-                            <option value="JPY">Japanese Yen (¥)</option>
-                            <option value="INR">Indian Rupee (₹)</option>
-                        </select>
+    <option value="USD" {% if current_user.currency == 'USD' %}selected{% endif %}>US Dollar ($)</option>
+    <option value="Tsh" {% if current_user.currency == 'Tsh' %}selected{% endif %}>Tanzania Shillings (Tsh)</option>
+    <option value="GBP" {% if current_user.currency == 'GBP' %}selected{% endif %}>British Pound (£)</option>
+    <option value="JPY" {% if current_user.currency == 'JPY' %}selected{% endif %}>Japanese Yen (¥)</option>
+    <option value="INR" {% if current_user.currency == 'INR' %}selected{% endif %}>Indian Rupee (₹)</option>
+</select>
                     </div>
                     <button type="submit" class="btn btn-primary">Update Profile</button>
                 </form>
@@ -142,27 +142,46 @@
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Profile form submission
-    document.getElementById('profile-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const profileData = {
-            username: document.getElementById('user-username').value,
-            email: document.getElementById('user-email').value,
-            currency: document.getElementById('user-currency').value
-        };
-        
-        // In a real app, you would send this to the server
+// Profile form submission
+document.getElementById('profile-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const profileData = {
+        username: document.getElementById('user-username').value,
+        email: document.getElementById('user-email').value,
+        currency: document.getElementById('user-currency').value
+    };
+    
+    // Send to server
+    fetch('/api/update_profile', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(profileData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Profile Updated',
+                text: 'Your profile information has been updated successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } else {
+            throw new Error(data.message || 'Failed to update profile');
+        }
+    })
+    .catch(error => {
         Swal.fire({
-            icon: 'success',
-            title: 'Profile Updated',
-            text: 'Your profile information has been updated successfully!',
-            timer: 2000,
-            showConfirmButton: false
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Failed to update profile'
         });
     });
-    
+});
     // Notification form submission
     document.getElementById('notification-form').addEventListener('submit', function(e) {
         e.preventDefault();

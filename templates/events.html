@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('view-events').addEventListener('click', function() {
         if (currentView !== 'events') {
             currentView = 'events';
-            document.getElementById('view-events').classList.replace('btn-outline-light', 'btn-light');
+            this.classList.replace('btn-outline-light', 'btn-light');
             document.getElementById('view-tasks').classList.replace('btn-light', 'btn-outline-light');
             loadEvents();
         }
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('view-tasks').addEventListener('click', function() {
         if (currentView !== 'tasks') {
             currentView = 'tasks';
-            document.getElementById('view-tasks').classList.replace('btn-outline-light', 'btn-light');
+            this.classList.replace('btn-outline-light', 'btn-light');
             document.getElementById('view-events').classList.replace('btn-light', 'btn-outline-light');
             loadTasks();
         }
@@ -304,33 +304,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Group events by date
                 const eventsByDate = {};
-                sortedEvents.forEach(event => {
+                sortedEvents.forEach((event, index) => {
                     const dateKey = new Date(event.start).toLocaleDateString();
                     if (!eventsByDate[dateKey]) {
                         eventsByDate[dateKey] = [];
                     }
-                    eventsByDate[dateKey].push(event);
+                    eventsByDate[dateKey].push({...event, id: Object.keys(events)[index]});
                 });
                 
                 // Create calendar view
                 let html = '<div class="list-group">';
                 
-                for (const [date, events] of Object.entries(eventsByDate)) {
+                for (const [date, dateEvents] of Object.entries(eventsByDate)) {
                     html += `
                         <div class="list-group-item bg-light">
                             <h6 class="mb-0">${date}</h6>
                         </div>
                     `;
                     
-                    events.forEach(event => {
+                    dateEvents.forEach(event => {
                         const startDate = new Date(event.start);
-                        const endDate = new Date(event.end);
+                        const endDate = event.end ? new Date(event.end) : null;
                         
                         html += `
                             <div class="list-group-item">
                                 <div class="d-flex w-100 justify-content-between">
                                     <h5 class="mb-1">${event.title}</h5>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-type="events" data-id="${Object.keys(events).find(key => events[key] === event)}">
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-type="events" data-id="${event.id}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </div>
@@ -402,13 +402,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    overdueTasks.forEach(task => {
+                    overdueTasks.forEach((task, index) => {
+                        const taskId = Object.keys(tasks)[index];
                         html += `
                             <div class="list-group-item">
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox" id="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
-                                        <label class="form-check-label" for="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <input class="form-check-input task-checkbox" type="checkbox" data-task-id="${taskId}" ${task.completed ? 'checked' : ''}>
+                                        <label class="form-check-label ${task.completed ? 'text-decoration-line-through' : ''}" for="task-${taskId}">
                                             <strong>${task.name}</strong>
                                         </label>
                                     </div>
@@ -416,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <span class="badge bg-${task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'} me-2">
                                             ${task.priority}
                                         </span>
-                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${taskId}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -436,13 +437,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    todayTasks.forEach(task => {
+                    todayTasks.forEach((task, index) => {
+                        const taskId = Object.keys(tasks)[index];
                         html += `
                             <div class="list-group-item">
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox" id="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
-                                        <label class="form-check-label" for="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <input class="form-check-input task-checkbox" type="checkbox" data-task-id="${taskId}" ${task.completed ? 'checked' : ''}>
+                                        <label class="form-check-label ${task.completed ? 'text-decoration-line-through' : ''}" for="task-${taskId}">
                                             <strong>${task.name}</strong>
                                         </label>
                                     </div>
@@ -450,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <span class="badge bg-${task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'} me-2">
                                             ${task.priority}
                                         </span>
-                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${taskId}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -470,13 +472,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    upcomingTasks.forEach(task => {
+                    upcomingTasks.forEach((task, index) => {
+                        const taskId = Object.keys(tasks)[index];
                         html += `
                             <div class="list-group-item">
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox" id="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
-                                        <label class="form-check-label" for="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <input class="form-check-input task-checkbox" type="checkbox" data-task-id="${taskId}" ${task.completed ? 'checked' : ''}>
+                                        <label class="form-check-label ${task.completed ? 'text-decoration-line-through' : ''}" for="task-${taskId}">
                                             <strong>${task.name}</strong>
                                         </label>
                                     </div>
@@ -484,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <span class="badge bg-${task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'} me-2">
                                             ${task.priority}
                                         </span>
-                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${taskId}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -504,24 +507,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                     
-                    completedTasks.forEach(task => {
+                    completedTasks.forEach((task, index) => {
+                        const taskId = Object.keys(tasks)[index];
                         html += `
                             <div class="list-group-item">
                                 <div class="d-flex w-100 justify-content-between align-items-center">
                                     <div class="form-check">
-                                        <input class="form-check-input task-checkbox" type="checkbox" id="task-${Object.keys(tasks).find(key => tasks[key] === task)}" checked>
-                                        <label class="form-check-label text-decoration-line-through" for="task-${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <input class="form-check-input task-checkbox" type="checkbox" data-task-id="${taskId}" checked>
+                                        <label class="form-check-label text-decoration-line-through" for="task-${taskId}">
                                             <strong>${task.name}</strong>
                                         </label>
                                     </div>
                                     <div>
-                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${Object.keys(tasks).find(key => tasks[key] === task)}">
+                                        <button class="btn btn-sm btn-outline-danger delete-btn" data-type="tasks" data-id="${taskId}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <p class="mb-1 mt-2">${task.description || 'No description'}</p>
-                                <small>Completed on ${new Date(task.completed_date).toLocaleDateString()}</small>
+                                <small>Completed on ${task.completed_date ? new Date(task.completed_date).toLocaleDateString() : 'Unknown date'}</small>
                             </div>
                         `;
                     });
@@ -533,9 +537,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Add event listeners to checkboxes
                 document.querySelectorAll('.task-checkbox').forEach(checkbox => {
                     checkbox.addEventListener('change', function() {
-                        const taskId = this.id.replace('task-', '');
-                        // In a real app, you would update the task status via API
-                        console.log(`Task ${taskId} marked as ${this.checked ? 'completed' : 'incomplete'}`);
+                        const taskId = this.getAttribute('data-task-id');
+                        const completed = this.checked;
+                        
+                        fetch(`/api/update_task/${taskId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ completed: completed })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                loadTasks(); // Reload tasks to reflect changes
+                            } else {
+                                console.error('Error updating task:', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating task:', error);
+                        });
                     });
                 });
             })
@@ -597,6 +619,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize with events view
     loadEvents();
+    loadUpcomingEvents();  // Add this
+    loadUpcomingTasks();   // Add this
 });
 </script>
 {% endblock %}
