@@ -10,12 +10,12 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY') or 'dev-secret-key'
+app.secret_key = os.environ.get('SECRET_KEY') or 'dev-secret-key'  
 
 # Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login'
+login_manager.login_view = 'auth.login' 
 
 # Import database after app initialization to avoid circular imports
 from database import db

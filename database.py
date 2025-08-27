@@ -11,4 +11,6 @@ if not mongo_uri:
     raise ValueError("No MONGODB_URI environment variable set")
 
 client = MongoClient(mongo_uri)
+
+# This will now match the DB in the URI
 db = client.money_event_manager

@@ -1,1600 +1,1043 @@
-{% extends "base.html" %}
-
-{% block extra_css %}
-<style>
-    /* Custom dashboard styles */
-
-    /* Event and Task Styles */
-.event-item {
-    border-left: 3px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.event-item:hover {
-    border-left-color: #0d6efd;
-    background-color: rgba(13, 110, 253, 0.03);
-}
-
-.event-date {
-    min-width: 90px;
-    font-weight: 500;
-}
-
-.task-item {
-    border-left: 3px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.task-item:hover {
-    background-color: rgba(13, 110, 253, 0.03);
-}
-
-.task-priority-high {
-    border-left-color: #dc3545;
-}
-
-.task-priority-medium {
-    border-left-color: #ffc107;
-}
-
-.task-priority-low {
-    border-left-color: #6c757d;
-}
-
-.priority-badge {
-    font-size: 0.7em;
-    padding: 0.25em 0.5em;
-}
-
-.bg-purple {
-    background-color: #6f42c1 !important;
-}
-
-.btn-purple {
-    background-color: #6f42c1;
-    border-color: #6f42c1;
-    color: white;
-}
-
-.btn-purple:hover {
-    background-color: #5a359c;
-    border-color: #5a359c;
-    color: white;
-}
-
-
-    .dashboard-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
-        overflow: hidden;
-    }
-    
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-    }
-    
-    .card-header {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        padding: 1rem 1.5rem;
-    }
-    
-    .stat-card {
-        text-align: center;
-        padding: 1.5rem 1rem;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-    }
-    
-    .stat-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        margin: 0.5rem 0;
-    }
-    
-    .progress-container {
-        position: relative;
-        height: 10px;
-        border-radius: 5px;
-        overflow: hidden;
-        background: #f0f0f0;
-    }
-    
-    .progress-bar {
-        height: 100%;
-        border-radius: 5px;
-        transition: width 0.8s ease;
-        position: relative;
-    }
-    
-    .progress-bar::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background-image: linear-gradient(
-            -45deg,
-            rgba(255, 255, 255, 0.2) 25%,
-            transparent 25%,
-            transparent 50%,
-            rgba(255, 255, 255, 0.2) 50%,
-            rgba(255, 255, 255, 0.2) 75%,
-            transparent 75%,
-            transparent
-        );
-        z-index: 1;
-        background-size: 15px 15px;
-        animation: move 2s linear infinite;
-    }
-    
-    @keyframes move {
-        0% {
-            background-position: 0 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money & Event Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --info: #4895ef;
+            --warning: #f72585;
+            --danger: #e63946;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --sidebar-width: 280px;
+            --header-height: 70px;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --hover-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
         }
-        100% {
-            background-position: 15px 15px;
+
+        [data-theme="dark"] {
+            --bg-color: #121826;
+            --card-bg: #1f2937;
+            --text-color: #e5e7eb;
+            --border-color: #374151;
+            --light: #1f2937;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --hover-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
         }
-    }
-    
-    .goal-card {
-        border-left: 4px solid #20c997;
-        transition: all 0.3s ease;
-    }
-    
-    .goal-card:hover {
-        border-left-color: #0d6efd;
-        background-color: rgba(13, 110, 253, 0.03);
-    }
-    
-    .empty-state {
-        padding: 3rem 1rem;
-        text-align: center;
-        color: #6c757d;
-    }
-    
-    .empty-state i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-    }
-    
-    .transaction-table {
-        font-size: 0.9rem;
-    }
-    
-    .transaction-table tr {
-        transition: background-color 0.2s ease;
-    }
-    
-    .transaction-table tr:hover {
-        background-color: rgba(13, 110, 253, 0.05);
-    }
-    
-    .event-item {
-        border-left: 3px solid transparent;
-        transition: all 0.2s ease;
-    }
-    
-    .event-item:hover {
-        border-left-color: #0d6efd;
-        background-color: rgba(13, 110, 253, 0.03);
-    }
-    
-    .event-date {
-        min-width: 90px;
-        font-weight: 500;
-    }
-    
-    .priority-badge {
-        font-size: 0.7em;
-        padding: 0.25em 0.5em;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .stat-value {
+
+        [data-theme="light"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #334155;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 1.5rem 1rem;
+            color: white;
+            transition: var(--transition);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 0 1.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar-brand i {
+            font-size: 1.8rem;
+            margin-right: 10px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: var(--transition);
+            padding: 1.5rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0 1.5rem 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-title h1 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            margin-bottom: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            width: 50px;
+            height: 26px;
+            background: var(--card-bg);
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 3px;
+            transition: var(--transition);
+        }
+
+        .theme-toggle-handle {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            transition: var(--transition);
+        }
+
+        [data-theme="dark"] .theme-toggle-handle {
+            transform: translateX(24px);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            box-shadow: var(--hover-shadow);
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            background: var(--card-bg);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
             font-size: 1.5rem;
         }
-        
-        .card-header h5 {
-            font-size: 1.1rem;
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
         }
-        
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
+
+        .stat-title {
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 0;
         }
-    }
-    
-    /* Animation for loading states */
-    @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
-    }
-    
-    .loading {
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-    
-    /* Currency badge */
-    .currency-badge {
-        font-size: 0.7em;
-        vertical-align: super;
-        margin-right: 2px;
-    }
-    
-    /* Task and bill styles */
-    .task-item, .bill-item {
-        border-left: 3px solid transparent;
-        transition: all 0.2s ease;
-    }
-    
-    .task-item:hover, .bill-item:hover {
-        background-color: rgba(13, 110, 253, 0.03);
-    }
-    
-    .task-priority-high {
-        border-left-color: #dc3545;
-    }
-    
-    .task-priority-medium {
-        border-left-color: #ffc107;
-    }
-    
-    .task-priority-low {
-        border-left-color: #6c757d;
-    }
-    
-    .bill-due-soon {
-        border-left-color: #ffc107;
-    }
-    
-    .bill-overdue {
-        border-left-color: #dc3545;
-    }
-    
-    .bill-paid {
-        border-left-color: #20c997;
-    }
-</style>
-{% endblock %}
 
-{% block content %}
-<div class="row">
-    <!-- Financial Summary Card -->
-    <div class="col-xxl-8 col-xl-7 col-md-12">
-        <div class="card dashboard-card mb-4">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Financial Overview</h5>
-                <a href="/money" class="btn btn-sm btn-light">View Details <i class="bi bi-arrow-right ms-1"></i></a>
-            </div>
-            <div class="card-body">
-                <div class="row mb-4">
-                    <div class="col-md-4 mb-3 mb-md-0">
-                        <div class="stat-card">
-                            <h6 class="text-muted">Total Income</h6>
-                            <div class="stat-value text-success" id="total-income">
-                                <span class="currency-badge">{{ current_user.currency }}</span>0
-                            </div>
-                            <small class="text-muted">This month</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3 mb-md-0">
-                        <div class="stat-card">
-                            <h6 class="text-muted">Total Expenses</h6>
-                            <div class="stat-value text-danger" id="total-expense">
-                                <span class="currency-badge">{{ current_user.currency }}</span>0
-                            </div>
-                            <small class="text-muted">This month</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h6 class="text-muted">Balance</h6>
-                            <div class="stat-value" id="balance">
-                                <span class="currency-badge">{{ current_user.currency }}</span>0
-                            </div>
-                            <small class="text-muted">Current</small>
-                        </div>
-                    </div>
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Activity Feed */
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        /* Buttons */
+        .btn {
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Toggle button for mobile */
+        .menu-toggle {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--border-radius);
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 992px) {
+            .menu-toggle {
+                display: flex;
+            }
+        }
+
+        /* Custom table styles */
+        .table {
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(var(--primary-rgb), 0.05);
+        }
+
+        /* Filter section */
+        .filter-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Export buttons */
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Animation for charts loading */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .chart-container canvas {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        /* Dashboard grid layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Specific chart containers */
+        .chart-card {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 1200px) {
+            .chart-card {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-brand">
+                <i class="bi bi-wallet2"></i>
+                <span>MoneyManager</span>
+            </a>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link active" href="/">
+                    <i class="bi bi-house-door"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/money">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Money</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/events">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Events</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/reports">
+                    <i class="bi bi-graph-up"></i>
+                    <span>Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/settings">
+                    <i class="bi bi-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="bi bi-person"></i>
                 </div>
-                <canvas id="financeChart" height="220"></canvas>
+                <div class="user-details">
+                    <p class="user-name">{{ current_user.username }}</p>
+                    <p class="user-role">Administrator</p>
+                </div>
+                <a href="/logout" class="text-white ms-2">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>
-    
-    <!-- Add this to your dashboard.html file, after the Savings Goals Card -->
 
-<!-- Upcoming Events Card -->
-<div class="col-xl-6 col-md-6">
-    <div class="card dashboard-card mb-4">
-        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-calendar-event me-2"></i>Upcoming Events</h5>
-            <a href="/events" class="btn btn-sm btn-light">View All <i class="bi bi-arrow-right ms-1"></i></a>
-        </div>
-        <div class="card-body p-0">
-            <div id="upcoming-events" class="list-group list-group-flush">
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading events...</span>
-                    </div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <div class="page-title">
+                <h1>Dashboard</h1>
+                <p>Welcome back, {{ current_user.username }}! Here's your financial overview.</p>
+            </div>
+            <div class="header-actions">
+                <div class="theme-toggle" id="themeToggle">
+                    <div class="theme-toggle-handle"></div>
                 </div>
+                <button class="menu-toggle" id="menuToggle">
+                    <i class="bi bi-list"></i>
+                </button>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Upcoming Tasks Card -->
-<div class="col-xl-6 col-md-6">
-    <div class="card dashboard-card mb-4">
-        <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Upcoming Tasks</h5>
-            <a href="/events" class="btn btn-sm btn-light">View All <i class="bi bi-arrow-right ms-1"></i></a>
-        </div>
-        <div class="card-body p-0">
-            <div id="upcoming-tasks" class="list-group list-group-flush">
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading tasks...</span>
-                    </div>
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <label for="dateRange" class="form-label">Date Range</label>
+                    <select class="form-select" id="dateRange">
+                        <option value="7">Last 7 Days</option>
+                        <option value="30" selected>Last 30 Days</option>
+                        <option value="90">Last 90 Days</option>
+                        <option value="365">Last Year</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <!-- Recent Transactions Card -->
-    <div class="col-xl-6 col-md-6">
-        <div class="card dashboard-card mb-4">
-            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Transactions</h5>
-                <div class="btn-group">
-                    <a href="/money" class="btn btn-sm btn-light">View All <i class="bi bi-arrow-right ms-1"></i></a>
+                <div class="col-md-3 mb-2">
+                    <label for="categoryFilter" class="form-label">Category</label>
+                    <select class="form-select" id="categoryFilter">
+                        <option value="">All Categories</option>
+                        <option value="food">Food & Dining</option>
+                        <option value="transport">Transportation</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="shopping">Shopping</option>
+                    </select>
                 </div>
-            </div>
-            <div class="card-body p-0">
-                <ul class="nav nav-tabs nav-justified" id="transactionsTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button">
-                            <i class="bi bi-arrow-up-right text-danger me-1"></i>Expenses
+                <div class="col-md-3 mb-2">
+                    <label for="userFilter" class="form-label">User</label>
+                    <select class="form-select" id="userFilter">
+                        <option value="">All Users</option>
+                        <option value="user1">User 1</option>
+                        <option value="user2">User 2</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-2 d-flex align-items-end">
+                    <div class="export-buttons">
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-download me-1"></i> CSV
                         </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="incomes-tab" data-bs-toggle="tab" data-bs-target="#incomes" type="button">
-                            <i class="bi bi-arrow-down-left text-success me-1"></i>Income
+                        <button class="btn btn-outline-primary">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> PDF
                         </button>
-                    </li>
-                </ul>
-                <div class="tab-content" id="transactionsTabContent">
-                    <div class="tab-pane fade show active" id="expenses" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-hover transaction-table mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Category</th>
-                                        <th class="text-end">Amount</th>
-                                        <th width="50px"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recent-expenses">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading expenses...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <h3 class="stat-value text-primary" id="total-income">$0</h3>
+                <p class="stat-title">Total Income</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-currency-exchange"></i>
+                </div>
+                <h3 class="stat-value text-danger" id="total-expense">$0</h3>
+                <p class="stat-title">Total Expenses</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-piggy-bank"></i>
+                </div>
+                <h3 class="stat-value text-success" id="balance">$0</h3>
+                <p class="stat-title">Current Balance</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon bg-info bg-opacity-10 text-info">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3 class="stat-value text-info">4</h3>
+                <p class="stat-title">Active Users</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Income & Expense Trends</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Monthly
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Weekly</a></li>
+                                <li><a class="dropdown-item" href="#">Monthly</a></li>
+                                <li><a class="dropdown-item" href="#">Yearly</a></li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="incomes" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-hover transaction-table mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Source</th>
-                                        <th class="text-end">Amount</th>
-                                        <th width="50px"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recent-incomes">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading income...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Expense Categories</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Charts -->
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Weekly Activities</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="weeklyActivityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Expense Forecast</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Activity</h5>
+                        <a href="#" class="btn btn-sm btn-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-feed">
+                            <div class="activity-item">
+                                <div class="activity-icon bg-primary bg-opacity-10 text-primary">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="activity-title">New expense added - Food & Dining</h6>
+                                    <p class="activity-time">2 hours ago</p>
+                                </div>
+                                <div class="activity-amount text-danger">-$42.50</div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon bg-success bg-opacity-10 text-success">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="activity-title">Salary received</h6>
+                                    <p class="activity-time">1 day ago</p>
+                                </div>
+                                <div class="activity-amount text-success">+$2,500.00</div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon bg-info bg-opacity-10 text-info">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="activity-title">Meeting scheduled - Project Review</h6>
+                                    <p class="activity-time">2 days ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon bg-warning bg-opacity-10 text-warning">
+                                    <i class="bi bi-receipt"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <h6 class="activity-title">Bill payment - Electricity</h6>
+                                    <p class="activity-time">3 days ago</p>
+                                </div>
+                                <div class="activity-amount text-danger">-$85.30</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- Savings Goals Card -->
-    <div class="col-xl-6 col-md-6">
-        <div class="card dashboard-card mb-4">
-            <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-piggy-bank me-2"></i>Savings Goals</h5>
-                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addGoalModal">
-                    <i class="bi bi-plus-circle me-1"></i>Add Goal
-                </button>
-            </div>
-            <div class="card-body">
-                <div id="goals-list">
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading goals...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Check for saved theme preference or respect OS preference
+        const savedTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        body.setAttribute('data-theme', savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
 
-<!-- New row for Tasks and Bills -->
-<div class="row">
-    <!-- Upcoming Tasks Card -->
-    <div class="col-xl-6 col-md-6">
-        <div class="card dashboard-card mb-4">
-            <div class="card-header bg-purple text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Upcoming Tasks</h5>
-                <a href="/events" class="btn btn-sm btn-light">View All <i class="bi bi-arrow-right ms-1"></i></a>
-            </div>
-            <div class="card-body p-0">
-                <div id="upcoming-tasks" class="list-group list-group-flush">
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading tasks...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Upcoming Bills Card -->
-    <div class="col-xl-6 col-md-6">
-        <div class="card dashboard-card mb-4">
-            <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Upcoming Bills</h5>
-                <button class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#addBillModal">
-                    <i class="bi bi-plus-circle me-1"></i>Add Bill
-                </button>
-            </div>
-            <div class="card-body p-0">
-                <div id="upcoming-bills" class="list-group list-group-flush">
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading bills...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.querySelector('.sidebar');
+        
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
 
-<!-- Add Goal Modal -->
-<div class="modal fade" id="addGoalModal" tabindex="-1" aria-labelledby="addGoalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addGoalModalLabel">
-                    <i class="bi bi-piggy-bank me-2"></i>Add Savings Goal
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="goal-form">
-                    <div class="mb-3">
-                        <label for="goal-name" class="form-label">Goal Name</label>
-                        <input type="text" class="form-control" id="goal-name" placeholder="e.g., New Laptop, Vacation" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="goal-amount" class="form-label">Target Amount ({{ current_user.currency }})</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="goal-amount" placeholder="0.00" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="goal-current" class="form-label">Current Amount ({{ current_user.currency }})</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="goal-current" value="0" placeholder="0.00">
-                    </div>
-                    <div class="mb-3">
-                        <label for="goal-date" class="form-label">Target Date (optional)</label>
-                        <input type="date" class="form-control" id="goal-date" min="{{ now.strftime('%Y-%m-%d') }}">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-goal">
-                    <span class="spinner-border spinner-border-sm me-1 d-none" id="goal-spinner"></span>
-                    Save Goal
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add Bill Modal -->
-<div class="modal fade" id="addBillModal" tabindex="-1" aria-labelledby="addBillModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addBillModalLabel">
-                    <i class="bi bi-receipt me-2"></i>Add Bill
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="bill-form">
-                    <div class="mb-3">
-                        <label for="bill-name" class="form-label">Bill Name</label>
-                        <input type="text" class="form-control" id="bill-name" placeholder="e.g., Electricity, Rent" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="bill-amount" class="form-label">Amount ({{ current_user.currency }})</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="bill-amount" placeholder="0.00" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="bill-due-date" class="form-label">Due Date</label>
-                        <input type="date" class="form-control" id="bill-due-date" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="bill-category" class="form-label">Category</label>
-                        <select class="form-select" id="bill-category">
-                            <option value="Utilities">Utilities</option>
-                            <option value="Rent/Mortgage">Rent/Mortgage</option>
-                            <option value="Insurance">Insurance</option>
-                            <option value="Subscription">Subscription</option>
-                            <option value="Loan">Loan</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="bill-recurring">
-                        <label class="form-check-label" for="bill-recurring">Recurring Bill</label>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="save-bill">
-                    <span class="spinner-border spinner-border-sm me-1 d-none" id="bill-spinner"></span>
-                    Save Bill
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Goal Modal -->
-<div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editGoalModalLabel">
-                    <i class="bi bi-pencil-square me-2"></i>Edit Savings Goal
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="edit-goal-form">
-                    <input type="hidden" id="edit-goal-id">
-                    <div class="mb-3">
-                        <label for="edit-goal-name" class="form-label">Goal Name</label>
-                        <input type="text" class="form-control" id="edit-goal-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-goal-amount" class="form-label">Target Amount ({{ current_user.currency }})</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="edit-goal-amount" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-goal-current" class="form-label">Current Amount ({{ current_user.currency }})</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="edit-goal-current">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit-goal-date" class="form-label">Target Date (optional)</label>
-                        <input type="date" class="form-control" id="edit-goal-date">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="update-goal">
-                    <span class="spinner-border spinner-border-sm me-1 d-none" id="edit-goal-spinner"></span>
-                    Update Goal
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm Delete
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete this item? This action cannot be undone.</p>
-                <p class="text-muted small" id="delete-item-details"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" id="confirm-delete">
-                    <span class="spinner-border spinner-border-sm me-1 d-none" id="delete-spinner"></span>
-                    Delete
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let deleteItemType, deleteItemId, deleteItemName;
-    let financeChart = null;
-    const userCurrency = '{{ current_user.currency }}';
-    
-    // Format currency based on user settings
-    function formatCurrency(amount) {
-        const symbols = {
-            'USD': '$', 
-            'Tsh': 'Tsh', 
-            'GBP': '£', 
-            'JPY': '¥', 
-            'INR': '₹'
+        // Sample data for charts (to be replaced with real data)
+        const financialData = {
+            income: [1200, 1900, 1500, 2100, 1800, 2200, 2400],
+            expenses: [800, 1100, 900, 1200, 1000, 1300, 1100],
+            categories: ['Food', 'Transport', 'Entertainment', 'Utilities', 'Shopping'],
+            categoryAmounts: [500, 300, 200, 250, 150],
+            weeklyActivities: [15, 22, 18, 25, 20, 30, 28],
+            forecast: [1100, 1150, 1200, 1250, 1300, 1350]
         };
-        const symbol = symbols[userCurrency] || userCurrency;
-        return symbol + ' ' + parseFloat(amount).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-    }
-    
-   // Format date for display
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-}
 
-// Mark task as complete
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.complete-task')) {
-        const button = e.target.closest('.complete-task');
-        const id = button.dataset.id;
-        
-        fetch('/api/complete_task', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: id })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to complete task');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showNotification('Task marked as complete!');
-                loadUpcomingTasks();
-            } else {
-                throw new Error(data.message || 'Failed to complete task');
-            }
-        })
-        .catch(error => {
-            console.error('Error completing task:', error);
-            showNotification('Failed to complete task. Please try again.', 'danger');
-        });
-    }
-});
-
-// Format time for display
-function formatTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString(undefined, {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-    
-    // Show loading state for a button
-    function setButtonLoading(buttonId, isLoading) {
-        const button = document.getElementById(buttonId);
-        const spinner = document.getElementById(buttonId + '-spinner');
-        
-        if (isLoading) {
-            button.disabled = true;
-            spinner.classList.remove('d-none');
-        } else {
-            button.disabled = false;
-            spinner.classList.add('d-none');
-        }
-    }
-    
-    // Show notification
-    function showNotification(message, type = 'success') {
-        // Remove any existing notifications
-        const existingAlerts = document.querySelectorAll('.alert-dashboard');
-        existingAlerts.forEach(alert => alert.remove());
-        
-        // Create new alert
-        const alert = document.createElement('div');
-        alert.className = `alert alert-${type} alert-dismissible fade show alert-dashboard`;
-        alert.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        
-        // Add to page
-        document.querySelector('.container.mt-4').prepend(alert);
-        
-        // Auto dismiss after 5 seconds
-        setTimeout(() => {
-            if (alert.parentNode) {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            }
-        }, 5000);
-    }
-    
-    // Load financial summary
-    function loadFinancialSummary() {
-        fetch('/api/get_financial_summary')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                document.getElementById('total-income').innerHTML = 
-                    `<span class="currency-badge">${userCurrency}</span>${parseFloat(data.total_income || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                
-                document.getElementById('total-expense').innerHTML = 
-                    `<span class="currency-badge">${userCurrency}</span>${parseFloat(data.total_expense || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                
-                document.getElementById('balance').innerHTML = 
-                    `<span class="currency-badge">${userCurrency}</span>${parseFloat(data.balance || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-                
-                // Create or update chart
-                const ctx = document.getElementById('financeChart').getContext('2d');
-                if (financeChart) {
-                    financeChart.destroy();
-                }
-                
-                financeChart = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Income', 'Expenses'],
-                        datasets: [{
-                            data: [data.total_income || 0, data.total_expense || 0],
-                            backgroundColor: ['#20c997', '#dc3545'],
-                            borderWidth: 0,
-                            hoverOffset: 10
-                        }]
+        // Initialize Charts
+        function initCharts() {
+            // Trend Chart (Income vs Expenses)
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const trendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: financialData.income,
+                            borderColor: '#4361ee',
+                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Expenses',
+                            data: financialData.expenses,
+                            borderColor: '#e63946',
+                            backgroundColor: 'rgba(230, 57, 70, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        cutout: '70%',
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    padding: 20,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.label}: ${formatCurrency(context.raw)}`;
-                                    }
-                                }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
                             }
                         },
-                        animation: {
-                            animateScale: true,
-                            animateRotate: true
+                        x: {
+                            grid: {
+                                display: false
+                            }
                         }
                     }
-                });
-            })
-            .catch(error => {
-                console.error('Error loading financial summary:', error);
-                showNotification('Failed to load financial data. Please try again.', 'danger');
-            });
-    }
-    
-    // Load recent expenses
-    function loadRecentExpenses() {
-        fetch('/api/get_expenses')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('recent-expenses');
-                const expenses = Object.values(data)
-                    .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
-                    .slice(0, 5);
-                
-                if (expenses.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="text-center py-4">
-                                <div class="empty-state">
-                                    <i class="bi bi-receipt"></i>
-                                    <p>No expenses recorded yet</p>
-                                    <a href="/money" class="btn btn-sm btn-primary">Add Your First Expense</a>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                } else {
-                    tbody.innerHTML = expenses.map(expense => {
-                        const id = Object.keys(data).find(key => data[key] === expense);
-                        return `
-                            <tr>
-                                <td>${formatDate(expense.date || expense.created_at)}</td>
-                                <td>${expense.category ? expense.category.charAt(0).toUpperCase() + expense.category.slice(1) : 'Uncategorized'}</td>
-                                <td class="text-danger text-end">-${formatCurrency(expense.amount)}</td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" 
-                                            data-type="expenses" 
-                                            data-id="${id}"
-                                            data-name="${expense.category} expense of ${formatCurrency(expense.amount)}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
                 }
-            })
-            .catch(error => {
-                console.error('Error loading expenses:', error);
-                document.getElementById('recent-expenses').innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center py-3 text-danger">
-                            <i class="bi bi-exclamation-triangle me-1"></i>Error loading expenses
-                        </td>
-                    </tr>
-                `;
             });
-    }
-    
-    // Load recent incomes
-    function loadRecentIncomes() {
-        fetch('/api/get_incomes')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('recent-incomes');
-                const incomes = Object.values(data)
-                    .sort((a, b) => new Date(b.date || b.created_at) - new Date(a.date || a.created_at))
-                    .slice(0, 5);
-                
-                if (incomes.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" class="text-center py-4">
-                                <div class="empty-state">
-                                    <i class="bi bi-cash-coin"></i>
-                                    <p>No income recorded yet</p>
-                                    <a href="/money" class="btn btn-sm btn-primary">Add Your First Income</a>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                } else {
-                    tbody.innerHTML = incomes.map(income => {
-                        const id = Object.keys(data).find(key => data[key] === income);
-                        return `
-                            <tr>
-                                <td>${formatDate(income.date || income.created_at)}</td>
-                                <td>${income.source || 'Unknown'}</td>
-                                <td class="text-success text-end">+${formatCurrency(income.amount)}</td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" 
-                                            data-type="incomes" 
-                                            data-id="${id}"
-                                            data-name="${income.source} income of ${formatCurrency(income.amount)}">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
-            })
-            .catch(error => {
-                console.error('Error loading incomes:', error);
-                document.getElementById('recent-incomes').innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-center py-3 text-danger">
-                            <i class="bi bi-exclamation-triangle me-1"></i>Error loading income
-                        </td>
-                    </tr>
-                `;
-            });
-    }
-    
-    // Load upcoming events
-function loadUpcomingEvents() {
-    fetch('/api/get_events')
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            const container = document.getElementById('upcoming-events');
-            const now = new Date();
-            const upcomingEvents = Object.values(data)
-                .filter(event => new Date(event.start) >= now)
-                .sort((a, b) => new Date(a.start) - new Date(b.start))
-                .slice(0, 5);
-            
-            if (upcomingEvents.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state p-4">
-                        <i class="bi bi-calendar-x"></i>
-                        <p>No upcoming events</p>
-                        <a href="/events" class="btn btn-sm btn-success">Schedule an Event</a>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = upcomingEvents.map(event => {
-                    const id = Object.keys(data).find(key => data[key] === event);
-                    const startDate = new Date(event.start);
-                    const endDate = new Date(event.end);
-                    const isSameDay = startDate.toDateString() === endDate.toDateString();
-                    
-                    return `
-                        <div class="list-group-item event-item py-3">
-                            <div class="d-flex align-items-center">
-                                <div class="event-date me-3 text-center">
-                                    <div class="fw-bold">${startDate.getDate()}</div>
-                                    <div class="text-uppercase small">${startDate.toLocaleString('default', { month: 'short' })}</div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">${event.title}</h6>
-                                    <p class="mb-1 small text-muted">${event.description || 'No description'}</p>
-                                    <small class="text-muted">
-                                        ${formatTime(event.start)}${isSameDay ? ` - ${formatTime(event.end)}` : ` - ${formatDate(event.end)} ${formatTime(event.end)}`}
-                                    </small>
-                                </div>
-                                <button class="btn btn-sm btn-outline-danger delete-btn ms-2" 
-                                        data-type="events" 
-                                        data-id="${id}"
-                                        data-name="${event.title} event">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-        })
-        .catch(error => {
-            console.error('Error loading events:', error);
-            container.innerHTML = `
-                <div class="empty-state p-4 text-danger">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    <p>Error loading events</p>
-                </div>
-            `;
-        });
-}
 
-// Load upcoming tasks
-function loadUpcomingTasks() {
-    fetch('/api/get_tasks')
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            const container = document.getElementById('upcoming-tasks');
-            const now = new Date();
-            const upcomingTasks = Object.values(data)
-                .filter(task => !task.completed && new Date(task.due_date || task.created_at) >= now)
-                .sort((a, b) => new Date(a.due_date || a.created_at) - new Date(b.due_date || b.created_at))
-                .slice(0, 5);
-            
-            if (upcomingTasks.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state p-4">
-                        <i class="bi bi-check2-square"></i>
-                        <p>No upcoming tasks</p>
-                        <a href="/events" class="btn btn-sm btn-purple">Create a Task</a>
-                    </div>
-                `;
-            } else {
-                container.innerHTML = upcomingTasks.map(task => {
-                    const id = Object.keys(data).find(key => data[key] === task);
-                    const dueDate = new Date(task.due_date || task.created_at);
-                    const priorityClass = task.priority ? `task-priority-${task.priority.toLowerCase()}` : '';
-                    
-                    return `
-                        <div class="list-group-item task-item py-3 ${priorityClass}">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center">
-                                        <h6 class="mb-0 me-2">${task.title}</h6>
-                                        ${task.priority ? `<span class="badge priority-badge bg-${task.priority === 'High' ? 'danger' : task.priority === 'Medium' ? 'warning' : 'secondary'}">${task.priority}</span>` : ''}
-                                    </div>
-                                    <p class="mb-1 small text-muted">${task.description || 'No description'}</p>
-                                    <small class="text-muted">
-                                        Due: ${formatDate(task.due_date || task.created_at)}
-                                    </small>
-                                </div>
-                                <div class="btn-group ms-2">
-                                    <button class="btn btn-sm btn-outline-success complete-task" data-id="${id}">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" 
-                                            data-type="tasks" 
-                                            data-id="${id}"
-                                            data-name="${task.title} task">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
-        })
-        .catch(error => {
-            console.error('Error loading tasks:', error);
-            container.innerHTML = `
-                <div class="empty-state p-4 text-danger">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    <p>Error loading tasks</p>
-                </div>
-            `;
-        });
-}
-    
-    // Load upcoming bills
-    function loadUpcomingBills() {
-        fetch('/api/get_bills')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const container = document.getElementById('upcoming-bills');
-                const now = new Date();
-                const upcomingBills = Object.values(data)
-                    .filter(bill => !bill.paid && new Date(bill.due_date) >= now)
-                    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
-                    .slice(0, 5);
-                
-                if (upcomingBills.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state p-4">
-                            <i class="bi bi-receipt"></i>
-                            <p>No upcoming bills</p>
-                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#addBillModal">
-                                Add a Bill
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = upcomingBills.map(bill => {
-                        const id = Object.keys(data).find(key => data[key] === bill);
-                        const dueDate = new Date(bill.due_date);
-                        const daysUntilDue = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
-                        let statusClass = '';
-                        
-                        if (bill.paid) {
-                            statusClass = 'bill-paid';
-                        } else if (daysUntilDue <= 0) {
-                            statusClass = 'bill-overdue';
-                        } else if (daysUntilDue <= 7) {
-                            statusClass = 'bill-due-soon';
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const categoryChart = new Chart(categoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: financialData.categories,
+                    datasets: [{
+                        data: financialData.categoryAmounts,
+                        backgroundColor: [
+                            '#4361ee',
+                            '#3f37c9',
+                            '#4cc9f0',
+                            '#4895ef',
+                            '#f72585'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
                         }
-                        
-                        return `
-                            <div class="list-group-item bill-item py-3 ${statusClass}">
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">${bill.name}</h6>
-                                        <p class="mb-1 small text-muted">${bill.category || 'No category'}</p>
-                                        <small class="text-muted">
-                                            Due: ${formatDate(bill.due_date)} 
-                                            ${!bill.paid && daysUntilDue <= 0 ? 
-                                                `<span class="badge bg-danger ms-1">Overdue</span>` : 
-                                                !bill.paid && daysUntilDue <= 7 ? 
-                                                `<span class="badge bg-warning text-dark ms-1">Due in ${daysUntilDue} days</span>` : 
-                                                ''}
-                                        </small>
-                                    </div>
-                                    <div class="text-end me-3">
-                                        <div class="fw-bold">${formatCurrency(bill.amount)}</div>
-                                    </div>
-                                    <div class="btn-group">
-                                        ${!bill.paid ? `
-                                            <button class="btn btn-sm btn-outline-success mark-paid" data-id="${id}">
-                                                <i class="bi bi-check-lg"></i>
-                                            </button>
-                                        ` : ''}
-                                        <button class="btn btn-sm btn-outline-danger delete-btn" 
-                                                data-type="bills" 
-                                                data-id="${id}"
-                                                data-name="${bill.name} bill">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
+                    }
                 }
-            })
-            .catch(error => {
-                console.error('Error loading bills:', error);
-                container.innerHTML = `
-                    <div class="empty-state p-4 text-danger">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        <p>Error loading bills</p>
-                    </div>
-                `;
             });
-    }
-    
-    // Load savings goals
-    function loadSavingsGoals() {
-        fetch('/api/get_goals')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const container = document.getElementById('goals-list');
-                const goals = Object.values(data)
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                
-                if (goals.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <i class="bi bi-piggy-bank"></i>
-                            <p>No savings goals yet</p>
-                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#addGoalModal">
-                                Create Your First Goal
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = goals.map(goal => {
-                        const id = Object.keys(data).find(key => data[key] === goal);
-                        const progress = Math.min(100, (goal.current_amount / goal.target_amount) * 100);
-                        const progressColor = progress >= 100 ? 'bg-success' : 'bg-primary';
-                        
-                        return `
-                            <div class="goal-card card mb-3">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <h5 class="card-title mb-0">${goal.name}</h5>
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-outline-primary edit-goal" 
-                                                    data-id="${id}"
-                                                    data-name="${goal.name}"
-                                                    data-target="${goal.target_amount}"
-                                                    data-current="${goal.current_amount}"
-                                                    data-date="${goal.target_date || ''}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger delete-btn" 
-                                                    data-type="goals" 
-                                                    data-id="${id}"
-                                                    data-name="${goal.name} goal">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="text-muted">Progress</span>
-                                        <span class="fw-bold">${progress.toFixed(1)}%</span>
-                                    </div>
-                                    
-                                    <div class="progress-container mb-3">
-                                        <div class="progress-bar ${progressColor}" style="width: ${progress}%"></div>
-                                    </div>
-                                    
-                                    <div class="d-flex justify-content-between">
-                                        <div>
-                                            <small class="text-muted">Saved</small>
-                                            <div class="fw-bold">${formatCurrency(goal.current_amount)}</div>
-                                        </div>
-                                        <div class="text-end">
-                                            <small class="text-muted">Target</small>
-                                            <div class="fw-bold">${formatCurrency(goal.target_amount)}</div>
-                                        </div>
-                                    </div>
-                                    
-                                    ${goal.target_date ? `
-                                        <div class="mt-2">
-                                            <small class="text-muted">Target Date</small>
-                                            <div>${formatDate(goal.target_date)}</div>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-            })
-            .catch(error => {
-                console.error('Error loading goals:', error);
-                container.innerHTML = `
-                    <div class="empty-state text-danger">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        <p>Error loading goals</p>
-                    </div>
-                `;
-            });
-    }
-    
-    // Add new savings goal
-    document.getElementById('save-goal').addEventListener('click', function() {
-        const name = document.getElementById('goal-name').value.trim();
-        const targetAmount = parseFloat(document.getElementById('goal-amount').value);
-        const currentAmount = parseFloat(document.getElementById('goal-current').value) || 0;
-        const targetDate = document.getElementById('goal-date').value;
-        
-        if (!name || isNaN(targetAmount) || targetAmount <= 0) {
-            showNotification('Please provide a valid goal name and target amount.', 'warning');
-            return;
-        }
-        
-        setButtonLoading('save-goal', true);
-        
-        fetch('/api/add_goal', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: name,
-                target_amount: targetAmount,
-                current_amount: currentAmount,
-                target_date: targetDate || null
-            })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to add goal');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showNotification('Goal added successfully!');
-                document.getElementById('goal-form').reset();
-                bootstrap.Modal.getInstance(document.getElementById('addGoalModal')).hide();
-                loadSavingsGoals();
-            } else {
-                throw new Error(data.message || 'Failed to add goal');
-            }
-        })
-        .catch(error => {
-            console.error('Error adding goal:', error);
-            showNotification('Failed to add goal. Please try again.', 'danger');
-        })
-        .finally(() => {
-            setButtonLoading('save-goal', false);
-        });
-    });
-    
-    // Add new bill
-    document.getElementById('save-bill').addEventListener('click', function() {
-        const name = document.getElementById('bill-name').value.trim();
-        const amount = parseFloat(document.getElementById('bill-amount').value);
-        const dueDate = document.getElementById('bill-due-date').value;
-        const category = document.getElementById('bill-category').value;
-        const recurring = document.getElementById('bill-recurring').checked;
-        
-        if (!name || isNaN(amount) || amount <= 0 || !dueDate) {
-            showNotification('Please provide a valid bill name, amount, and due date.', 'warning');
-            return;
-        }
-        
-        setButtonLoading('save-bill', true);
-        
-        fetch('/api/add_bill', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            
-            },
-            body: JSON.stringify({
-                name: name,
-                amount: amount,
-                due_date: dueDate,
-                category: category,
-                recurring: recurring
-            })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to add bill');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showNotification('Bill added successfully!');
-                document.getElementById('bill-form').reset();
-                bootstrap.Modal.getInstance(document.getElementById('addBillModal')).hide();
-                loadUpcomingBills();
-            } else {
-                throw new Error(data.message || 'Failed to add bill');
-            }
-        })
-        .catch(error => {
-            console.error('Error adding bill:', error);
-            showNotification('Failed to add bill. Please try again.', 'danger');
-        })
-        .finally(() => {
-            setButtonLoading('save-bill', false);
-        });
-    });
-    
-    // Edit goal - populate modal
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.edit-goal')) {
-            const button = e.target.closest('.edit-goal');
-            const id = button.dataset.id;
-            const name = button.dataset.name;
-            const target = button.dataset.target;
-            const current = button.dataset.current;
-            const date = button.dataset.date;
-            
-            document.getElementById('edit-goal-id').value = id;
-            document.getElementById('edit-goal-name').value = name;
-            document.getElementById('edit-goal-amount').value = target;
-            document.getElementById('edit-goal-current').value = current;
-            document.getElementById('edit-goal-date').value = date;
-            
-            const modal = new bootstrap.Modal(document.getElementById('editGoalModal'));
-            modal.show();
-        }
-    });
-    
-    // Update goal
-    document.getElementById('update-goal').addEventListener('click', function() {
-        const id = document.getElementById('edit-goal-id').value;
-        const name = document.getElementById('edit-goal-name').value.trim();
-        const targetAmount = parseFloat(document.getElementById('edit-goal-amount').value);
-        const currentAmount = parseFloat(document.getElementById('edit-goal-current').value) || 0;
-        const targetDate = document.getElementById('edit-goal-date').value;
-        
-        if (!name || isNaN(targetAmount) || targetAmount <= 0) {
-            showNotification('Please provide a valid goal name and target amount.', 'warning');
-            return;
-        }
-        
-        setButtonLoading('update-goal', true);
-        
-        fetch('/api/update_goal', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: id,
-                name: name,
-                target_amount: targetAmount,
-                current_amount: currentAmount,
-                target_date: targetDate || null
-            })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to update goal');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showNotification('Goal updated successfully!');
-                bootstrap.Modal.getInstance(document.getElementById('editGoalModal')).hide();
-                loadSavingsGoals();
-            } else {
-                throw new Error(data.message || 'Failed to update goal');
-            }
-        })
-        .catch(error => {
-            console.error('Error updating goal:', error);
-            showNotification('Failed to update goal. Please try again.', 'danger');
-        })
-        .finally(() => {
-            setButtonLoading('update-goal', false);
-        });
-    });
-    
-    // Mark task as complete
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.complete-task')) {
-            const button = e.target.closest('.complete-task');
-            const id = button.dataset.id;
-            
-            fetch('/api/complete_task', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+
+            // Weekly Activity Chart
+            const weeklyCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+            const weeklyChart = new Chart(weeklyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Activities',
+                        data: financialData.weeklyActivities,
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderRadius: 5
+                    }]
                 },
-                body: JSON.stringify({ id: id })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to complete task');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    showNotification('Task marked as complete!');
-                    loadUpcomingTasks();
-                } else {
-                    throw new Error(data.message || 'Failed to complete task');
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
                 }
-            })
-            .catch(error => {
-                console.error('Error completing task:', error);
-                showNotification('Failed to complete task. Please try again.', 'danger');
             });
-        }
-    });
-    
-    // Mark bill as paid
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.mark-paid')) {
-            const button = e.target.closest('.mark-paid');
-            const id = button.dataset.id;
-            
-            fetch('/api/mark_bill_paid', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+
+            // Forecast Chart
+            const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+            const forecastChart = new Chart(forecastCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Next Week', '2 Weeks', '3 Weeks', '4 Weeks', '5 Weeks', '6 Weeks'],
+                    datasets: [{
+                        label: 'Expense Forecast',
+                        data: financialData.forecast,
+                        borderColor: '#f72585',
+                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
                 },
-                body: JSON.stringify({ id: id })
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to mark bill as paid');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    showNotification('Bill marked as paid!');
-                    loadUpcomingBills();
-                } else {
-                    throw new Error(data.message || 'Failed to mark bill as paid');
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
                 }
-            })
-            .catch(error => {
-                console.error('Error marking bill as paid:', error);
-                showNotification('Failed to mark bill as paid. Please try again.', 'danger');
             });
+
+            return { trendChart, categoryChart, weeklyChart, forecastChart };
         }
-    });
-    
-    // Delete item setup
-    document.addEventListener('click', function(e) {
-        if (e.target.closest('.delete-btn')) {
-            const button = e.target.closest('.delete-btn');
-            deleteItemType = button.dataset.type;
-            deleteItemId = button.dataset.id;
-            deleteItemName = button.dataset.name;
+
+        // Initialize charts when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const charts = initCharts();
             
-            document.getElementById('delete-item-details').textContent = `You are about to delete: ${deleteItemName}`;
+            // Simulate real-time updates every 30 seconds
+            setInterval(() => {
+                // This would be replaced with actual API calls in a real application
+                simulateDataUpdate(charts);
+            }, 30000);
             
-            const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
-            modal.show();
-        }
-    });
-    
-    // Confirm delete
-    document.getElementById('confirm-delete').addEventListener('click', function() {
-        setButtonLoading('confirm-delete', true);
-        
-        fetch('/api/delete_item', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                type: deleteItemType,
-                id: deleteItemId
-            })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to delete item');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                showNotification('Item deleted successfully!');
-                bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
-                
-                // Reload the appropriate section
-                switch (deleteItemType) {
-                    case 'expenses':
-                        loadRecentExpenses();
-                        loadFinancialSummary();
-                        break;
-                    case 'incomes':
-                        loadRecentIncomes();
-                        loadFinancialSummary();
-                        break;
-                    case 'events':
-                        loadUpcomingEvents();
-                        break;
-                    case 'tasks':
-                        loadUpcomingTasks();
-                        break;
-                    case 'bills':
-                        loadUpcomingBills();
-                        break;
-                    case 'goals':
-                        loadSavingsGoals();
-                        break;
-                }
-            } else {
-                throw new Error(data.message || 'Failed to delete item');
-            }
-        })
-        .catch(error => {
-            console.error('Error deleting item:', error);
-            showNotification('Failed to delete item. Please try again.', 'danger');
-        })
-        .finally(() => {
-            setButtonLoading('confirm-delete', false);
+            // Load initial financial data
+            loadFinancialData();
         });
-    });
-    
-    // Initialize dashboard
-    loadFinancialSummary();
-    loadRecentExpenses();
-    loadRecentIncomes();
-    loadUpcomingEvents();
-    loadUpcomingTasks();
-    loadUpcomingBills();
-    loadSavingsGoals();
-    
-    // Refresh data every 5 minutes
-    setInterval(() => {
-        loadFinancialSummary();
-        loadRecentExpenses();
-        loadRecentIncomes();
-        loadUpcomingEvents();
-        loadUpcomingTasks();
-        loadUpcomingBills();
-        loadSavingsGoals();
-    }, 300000);
-});
-</script>
-{% endblock %}
+
+        // Simulate data updates for charts
+        function simulateDataUpdate(charts) {
+            // Randomly update data values slightly
+            charts.trendChart.data.datasets.forEach(dataset => {
+                dataset.data = dataset.data.map(value => 
+                    Math.max(500, value + (Math.random() * 200 - 100))
+                );
+            });
+            
+            charts.categoryChart.data.datasets[0].data = 
+                charts.categoryChart.data.datasets[0].data.map(value => 
+                    Math.max(50, value + (Math.random() * 50 - 25))
+                );
+            
+            charts.weeklyChart.data.datasets[0].data = 
+                charts.weeklyChart.data.datasets[0].data.map(value => 
+                    Math.max(5, value + (Math.random() * 5 - 2))
+                );
+            
+            charts.forecastChart.data.datasets[0].data = 
+                charts.forecastChart.data.datasets[0].data.map(value => 
+                    Math.max(800, value + (Math.random() * 100 - 50))
+                );
+            
+            // Update all charts
+            Object.values(charts).forEach(chart => chart.update());
+            
+            // Also update the financial stats
+            updateFinancialStats();
+        }
+
+        // Load financial data from API
+        function loadFinancialData() {
+            // This would be replaced with actual API calls in your application
+            fetch('/api/get_financial_summary')
+                .then(response => response.json())
+                .then(data => {
+                    updateFinancialStats(data);
+                })
+                .catch(error => {
+                    console.error('Error loading financial data:', error);
+                    // Set some demo data if API fails
+                    updateFinancialStats({
+                        total_income: 4250.75,
+                        total_expense: 2180.30,
+                        balance: 2070.45
+                    });
+                });
+        }
+
+        // Update financial stats on the page
+        function updateFinancialStats(data = null) {
+            if (data) {
+                document.getElementById('total-income').textContent = `$${data.total_income.toFixed(2)}`;
+                document.getElementById('total-expense').textContent = `$${data.total_expense.toFixed(2)}`;
+                document.getElementById('balance').textContent = `$${data.balance.toFixed(2)}`;
+            } else {
+                // Just add some random fluctuation for the demo
+                const incomeElem = document.getElementById('total-income');
+                const expenseElem = document.getElementById('total-expense');
+                const balanceElem = document.getElementById('balance');
+                
+                const currentIncome = parseFloat(incomeElem.textContent.substring(1));
+                const currentExpense = parseFloat(expenseElem.textContent.substring(1));
+                
+                const newIncome = Math.max(0, currentIncome + (Math.random() * 100 - 50));
+                const newExpense = Math.max(0, currentExpense + (Math.random() * 50 - 25));
+                const newBalance = newIncome - newExpense;
+                
+                incomeElem.textContent = `$${newIncome.toFixed(2)}`;
+                expenseElem.textContent = `$${newExpense.toFixed(2)}`;
+                balanceElem.textContent = `$${newBalance.toFixed(2)}`;
+            }
+        }
+
+        // Filter functionality
+        document.getElementById('dateRange').addEventListener('change', function() {
+            // This would trigger a reload of data based on the selected filter
+            loadFinancialData();
+            
+            // Show loading state
+            Swal.fire({
+                title: 'Updating data...',
+                timer: 1000,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        });
+
+        // Similarly for other filters
+        document.getElementById('categoryFilter').addEventListener('change', loadFinancialData);
+        document.getElementById('userFilter').addEventListener('change', loadFinancialData);
+    </script>
+</body>
+</html>
