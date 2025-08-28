@@ -1,7 +1,3 @@
-<!-- login.html -->
-{% extends "base.html" %}
-
-{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,8 +51,8 @@
         
         .container {
             display: flex;
-            max-width: 1100px;
-            width: 100%;
+            max-width: 900px; /* Reduced from 1100px */
+            width: 85%; /* Changed from 100% */
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             overflow: hidden;
@@ -71,7 +67,7 @@
             flex: 1;
             background: linear-gradient(to bottom right, #0f3460, #1a1a2e);
             color: white;
-            padding: 50px;
+            padding: 40px; /* Reduced from 50px */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -94,7 +90,7 @@
         
         .login-section {
             flex: 1;
-            padding: 50px;
+            padding: 40px; /* Reduced from 50px */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -102,9 +98,9 @@
         }
         
         .logo {
-            font-size: 28px;
+            font-size: 24px; /* Reduced from 28px */
             font-weight: bold;
-            margin-bottom: 30px;
+            margin-bottom: 25px; /* Reduced from 30px */
             color: #0f3460;
             display: flex;
             align-items: center;
@@ -117,7 +113,7 @@
         }
         
         h1 {
-            font-size: 36px;
+            font-size: 32px; /* Reduced from 36px */
             margin-bottom: 10px;
             color: #0f3460;
             position: relative;
@@ -136,7 +132,7 @@
         }
         
         .welcome-heading {
-            font-size: 42px;
+            font-size: 36px; /* Reduced from 42px */
             font-weight: 800;
             margin-bottom: 20px;
             line-height: 1.2;
@@ -146,8 +142,8 @@
         }
         
         .tagline {
-            font-size: 18px;
-            margin-bottom: 30px;
+            font-size: 16px; /* Reduced from 18px */
+            margin-bottom: 25px; /* Reduced from 30px */
             line-height: 1.5;
             color: #c5c5c5;
             position: relative;
@@ -156,13 +152,13 @@
         
         .subheading {
             color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
+            margin-bottom: 25px; /* Reduced from 30px */
+            font-size: 15px; /* Reduced from 16px */
             line-height: 1.5;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px; /* Reduced from 20px */
             position: relative;
         }
         
@@ -175,10 +171,10 @@
         
         input {
             width: 100%;
-            padding: 15px 45px 15px 15px;
+            padding: 14px 45px 14px 15px; /* Reduced from 15px */
             border: 2px solid #e1e5ea;
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px; /* Reduced from 16px */
             transition: all 0.3s;
         }
         
@@ -213,7 +209,7 @@
         .remember-forgot {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 22px; /* Reduced from 25px */
             align-items: center;
         }
         
@@ -259,9 +255,9 @@
             background: linear-gradient(to right, #0f3460, #1a1a2e);
             color: white;
             border: none;
-            padding: 16px;
+            padding: 15px; /* Reduced from 16px */
             border-radius: 10px;
-            font-size: 16px;
+            font-size: 15px; /* Reduced from 16px */
             font-weight: 600;
             cursor: pointer;
             width: 100%;
@@ -292,7 +288,7 @@
         
         .separator {
             text-align: center;
-            margin: 25px 0;
+            margin: 22px 0; /* Reduced from 25px */
             position: relative;
             color: #777;
         }
@@ -319,12 +315,12 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 22px; /* Reduced from 25px */
         }
         
         .social-btn {
-            width: 50px;
-            height: 50px;
+            width: 45px; /* Reduced from 50px */
+            height: 45px; /* Reduced from 50px */
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -360,7 +356,7 @@
         
         .signup-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 18px; /* Reduced from 20px */
             color: #666;
         }
         
@@ -392,9 +388,9 @@
         }
         
         .alert {
-            padding: 15px;
+            padding: 14px; /* Reduced from 15px */
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 18px; /* Reduced from 20px */
             font-weight: 500;
             position: relative;
             overflow: hidden;
@@ -440,7 +436,7 @@
         @media (max-width: 900px) {
             .container {
                 flex-direction: column;
-                max-width: 500px;
+                max-width: 450px; /* Reduced from 500px */
             }
             
             .welcome-section, .login-section {
@@ -448,7 +444,7 @@
             }
             
             .welcome-section {
-                padding: 40px 30px;
+                padding: 35px 30px; /* Reduced from 40px */
             }
         }
         
@@ -460,11 +456,11 @@
             }
             
             h1 {
-                font-size: 30px;
+                font-size: 28px; /* Reduced from 30px */
             }
             
             .welcome-heading {
-                font-size: 32px;
+                font-size: 28px; /* Reduced from 32px */
             }
         }
     </style>
@@ -478,7 +474,7 @@
             <h2 class="welcome-heading">WELCOME<br>TO PERSON MANAGEMENT<br>SYSTEM</h2>
             <p class="tagline">Hi, Here you will get all kind of staff</p>
             <div class="floating-icon">
-                <i class="fas fa-user-tie" style="font-size: 100px; opacity: 0.1; position: absolute; bottom: 20px; right: 20px;"></i>
+                <i class="fas fa-user-tie" style="font-size: 80px; opacity: 0.1; position: absolute; bottom: 20px; right: 20px;"></i>
             </div>
         </div>
         
@@ -490,16 +486,6 @@
             
             <h1>Login</h1>
             <p class="subheading">Sign in to access your account and start managing</p>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
             
             <form method="POST" action="/login">
                 <div class="form-group">
@@ -600,4 +586,3 @@
     </script>
 </body>
 </html>
-{% endblock %}

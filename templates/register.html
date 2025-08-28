@@ -17,32 +17,31 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
+        .register-container {
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 80vh;
             padding: 20px;
-            overflow: hidden;
-            position: relative;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
         
         /* Money Animation */
         .money-animation {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
             z-index: 0;
             overflow: hidden;
+            pointer-events: none;
         }
         
         .money {
             position: absolute;
-            color: rgba(255, 215, 0, 0.7);
-            font-size: 24px;
+            color: rgba(255, 215, 0, 0.5);
+            font-size: 18px;
             animation: fall linear infinite;
             user-select: none;
         }
@@ -55,12 +54,12 @@
         
         .container {
             display: flex;
-            max-width: 1100px;
+            max-width: 900px;
             width: 100%;
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             position: relative;
             z-index: 1;
             backdrop-filter: blur(5px);
@@ -69,9 +68,9 @@
         
         .welcome-section {
             flex: 1;
-            background: linear-gradient(to bottom right, #0f3460, #1a1a2e);
+            background: linear-gradient(to bottom right, #4e54c8, #8f94fb);
             color: white;
-            padding: 50px;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -93,8 +92,8 @@
         }
         
         .login-section {
-            flex: 1;
-            padding: 50px;
+            flex: 1.2;
+            padding: 40px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -102,10 +101,10 @@
         }
         
         .logo {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: bold;
-            margin-bottom: 30px;
-            color: #0f3460;
+            margin-bottom: 25px;
+            color: #4e54c8;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -117,9 +116,9 @@
         }
         
         h1 {
-            font-size: 36px;
+            font-size: 28px;
             margin-bottom: 10px;
-            color: #0f3460;
+            color: #4e54c8;
             position: relative;
             display: inline-block;
         }
@@ -127,73 +126,74 @@
         h1::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -8px;
             left: 0;
-            width: 50px;
-            height: 4px;
-            background: linear-gradient(to right, #0f3460, #e94560);
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
             border-radius: 2px;
         }
         
         .welcome-heading {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
             line-height: 1.2;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1;
         }
         
         .tagline {
-            font-size: 18px;
-            margin-bottom: 30px;
+            font-size: 16px;
+            margin-bottom: 25px;
             line-height: 1.5;
-            color: #c5c5c5;
+            color: rgba(255, 255, 255, 0.9);
             position: relative;
             z-index: 1;
         }
         
         .subheading {
             color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
+            margin-bottom: 25px;
+            font-size: 14px;
             line-height: 1.5;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             position: relative;
         }
         
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
-            color: #444;
+            color: #555;
+            font-size: 14px;
         }
         
         input {
             width: 100%;
-            padding: 15px 45px 15px 15px;
+            padding: 12px 40px 12px 12px;
             border: 2px solid #e1e5ea;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 14px;
             transition: all 0.3s;
         }
         
         input:focus {
-            border-color: #0f3460;
+            border-color: #4e54c8;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.2);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 3px rgba(78, 84, 200, 0.2);
         }
         
         .input-icon {
             position: absolute;
-            right: 15px;
-            top: 42px;
+            right: 12px;
+            top: 38px;
             color: #777;
+            font-size: 14px;
         }
         
         .password-container {
@@ -202,21 +202,22 @@
         
         .toggle-password {
             position: absolute;
-            right: 15px;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #777;
             z-index: 2;
+            font-size: 14px;
         }
         
         .login-btn {
-            background: linear-gradient(to right, #0f3460, #1a1a2e);
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
             color: white;
             border: none;
-            padding: 16px;
-            border-radius: 10px;
-            font-size: 16px;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
@@ -237,8 +238,8 @@
         }
         
         .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(15, 52, 96, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(78, 84, 200, 0.3);
         }
         
         .login-btn:hover::before {
@@ -247,9 +248,10 @@
         
         .separator {
             text-align: center;
-            margin: 25px 0;
+            margin: 20px 0;
             position: relative;
             color: #777;
+            font-size: 13px;
         }
         
         .separator::before,
@@ -257,7 +259,7 @@
             content: '';
             position: absolute;
             top: 50%;
-            width: 40%;
+            width: 35%;
             height: 1px;
             background: linear-gradient(to right, transparent, #ddd, transparent);
         }
@@ -273,13 +275,13 @@
         .social-login {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-bottom: 25px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
         
         .social-btn {
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -288,11 +290,12 @@
             border: 2px solid #e1e5ea;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 14px;
         }
         
         .social-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
         
         .social-btn:nth-child(1):hover {
@@ -315,12 +318,13 @@
         
         .signup-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
             color: #666;
+            font-size: 14px;
         }
         
         .signup-link a {
-            color: #0f3460;
+            color: #4e54c8;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s;
@@ -333,13 +337,13 @@
             bottom: -2px;
             left: 0;
             width: 0;
-            height: 2px;
-            background: #e94560;
+            height: 1px;
+            background: #8f94fb;
             transition: width 0.3s;
         }
         
         .signup-link a:hover {
-            color: #e94560;
+            color: #8f94fb;
         }
         
         .signup-link a:hover::after {
@@ -347,14 +351,15 @@
         }
         
         .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
             font-weight: 500;
             position: relative;
             overflow: hidden;
-            border-left: 5px solid;
+            border-left: 4px solid;
             animation: slideIn 0.5s ease-out;
+            font-size: 13px;
         }
         
         @keyframes slideIn {
@@ -392,10 +397,10 @@
             border-color: #0c5460;
         }
         
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
             .container {
                 flex-direction: column;
-                max-width: 500px;
+                max-width: 450px;
             }
             
             .welcome-section, .login-section {
@@ -403,23 +408,31 @@
             }
             
             .welcome-section {
-                padding: 40px 30px;
+                padding: 35px 30px;
+            }
+            
+            .welcome-heading {
+                font-size: 28px;
             }
         }
         
         @media (max-width: 480px) {
             h1 {
-                font-size: 30px;
+                font-size: 24px;
             }
             
             .welcome-heading {
-                font-size: 32px;
+                font-size: 24px;
+            }
+            
+            .logo {
+                font-size: 18px;
             }
         }
         
         .password-strength {
-            margin-top: 8px;
-            height: 6px;
+            margin-top: 6px;
+            height: 5px;
             border-radius: 3px;
             background: #eee;
             overflow: hidden;
@@ -437,94 +450,96 @@
     <!-- Money Animation Container -->
     <div class="money-animation" id="moneyAnimation"></div>
     
-    <div class="container">
-        <div class="welcome-section">
-            <h2 class="welcome-heading">JOIN OUR<br>PERSON MANAGEMENT<br>SYSTEM</h2>
-            <p class="tagline">Register today to access all features</p>
-            <div class="floating-icon">
-                <i class="fas fa-users" style="font-size: 100px; opacity: 0.1; position: absolute; bottom: 20px; right: 20px;"></i>
-            </div>
-        </div>
-        
-        <div class="login-section">
-            <div class="logo">
-                <i class="fas fa-store"></i>
-                <span>PERSON MANAGEMENT SYSTEM</span>
+    <div class="register-container">
+        <div class="container">
+            <div class="welcome-section">
+                <h2 class="welcome-heading">JOIN OUR<br>PERSON MANAGEMENT<br>SYSTEM</h2>
+                <p class="tagline">Register today to access all features</p>
+                <div class="floating-icon">
+                    <i class="fas fa-users" style="font-size: 80px; opacity: 0.1; position: absolute; bottom: 15px; right: 15px;"></i>
+                </div>
             </div>
             
-            <h1>Register</h1>
-            <p class="subheading">Create an account to start managing</p>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}" role="alert">
-                            {{ message }}
+            <div class="login-section">
+                <div class="logo">
+                    <i class="fas fa-user-circle"></i>
+                    <span>PERSON MANAGEMENT</span>
+                </div>
+                
+                <h1>Create Account</h1>
+                <p class="subheading">Register to start managing your data</p>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" role="alert">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" action="/register" id="registerForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                        <div class="input-icon">
+                            <i class="fas fa-user"></i>
                         </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            
-            <form method="POST" action="/register" id="registerForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required>
-                    <div class="input-icon">
-                        <i class="fas fa-user"></i>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                        <div class="input-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-container">
+                            <input type="password" id="password" name="password" required>
+                            <span class="toggle-password" id="togglePassword">
+                                <i class="far fa-eye"></i>
+                            </span>
+                        </div>
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <div class="password-container">
+                            <input type="password" id="confirm-password" name="confirm-password" required>
+                            <span class="toggle-password" id="toggleConfirmPassword">
+                                <i class="far fa-eye"></i>
+                            </span>
+                        </div>
+                        <div id="passwordMatch" style="margin-top: 6px; font-size: 13px; height: 18px;"></div>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Register</button>
+                </form>
+                
+                <div class="separator">or continue with</div>
+                
+                <div class="social-login">
+                    <div class="social-btn">
+                        <i class="fab fa-google"></i>
+                    </div>
+                    <div class="social-btn">
+                        <i class="fab fa-facebook-f"></i>
+                    </div>
+                    <div class="social-btn">
+                        <i class="fab fa-twitter"></i>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
-                    <div class="input-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
+                <div class="signup-link">
+                    Already have an account? <a href="/login">Login now</a>
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="password-container">
-                        <input type="password" id="password" name="password" required>
-                        <span class="toggle-password" id="togglePassword">
-                            <i class="far fa-eye"></i>
-                        </span>
-                    </div>
-                    <div class="password-strength">
-                        <div class="password-strength-bar" id="passwordStrengthBar"></div>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirm-password">Confirm Password</label>
-                    <div class="password-container">
-                        <input type="password" id="confirm-password" name="confirm-password" required>
-                        <span class="toggle-password" id="toggleConfirmPassword">
-                            <i class="far fa-eye"></i>
-                        </span>
-                    </div>
-                    <div id="passwordMatch" style="margin-top: 8px; font-size: 14px; height: 20px;"></div>
-                </div>
-                
-                <button type="submit" class="login-btn">Register</button>
-            </form>
-            
-            <div class="separator">or continue with</div>
-            
-            <div class="social-login">
-                <div class="social-btn">
-                    <i class="fab fa-google"></i>
-                </div>
-                <div class="social-btn">
-                    <i class="fab fa-facebook-f"></i>
-                </div>
-                <div class="social-btn">
-                    <i class="fab fa-twitter"></i>
-                </div>
-            </div>
-            
-            <div class="signup-link">
-                Already have an account? <a href="/login">Login now</a>
             </div>
         </div>
     </div>
