@@ -1,11 +1,190 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* Background pattern with money symbols */
+    body {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e3f2fd' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        overflow: hidden;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+    
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+    }
+    
+    .card-header.bg-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    }
+    
+    .card-header.bg-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%) !important;
+    }
+    
+    .card-header.bg-info {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%) !important;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e3e6f0;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        border-color: #a4b3d9;
+    }
+    
+    .btn {
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #3a5ecc 0%, #1a3a9e 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.4);
+    }
+    
+    .view-toggle {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .view-toggle .btn {
+        border-radius: 0;
+        padding: 0.5rem 1.25rem;
+    }
+    
+    .event-item, .task-item {
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
+        margin-bottom: 0.5rem;
+        border-radius: 8px;
+    }
+    
+    .event-item:hover, .task-item:hover {
+        background-color: #f8f9fc;
+        transform: translateX(5px);
+    }
+    
+    .event-item-primary {
+        border-left-color: #4e73df;
+    }
+    
+    .event-item-success {
+        border-left-color: #1cc88a;
+    }
+    
+    .event-item-info {
+        border-left-color: #36b9cc;
+    }
+    
+    .priority-badge {
+        padding: 0.35rem 0.65rem;
+        border-radius: 6px;
+        font-weight: 600;
+    }
+    
+    .priority-high {
+        background-color: #e74a3b;
+        color: white;
+    }
+    
+    .priority-medium {
+        background-color: #f6c23e;
+        color: #2c2929;
+    }
+    
+    .priority-low {
+        background-color: #858796;
+        color: white;
+    }
+    
+    .recurring-badge {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+        color: white;
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #f8f9fc 0%, #e3e6f0 100%);
+        border-radius: 8px;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #4e73df;
+        border-left: 4px solid #4e73df;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #b7b9cc;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .task-checkbox:checked + label {
+        text-decoration: line-through;
+        color: #858796;
+    }
+    
+    .custom-checkbox .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-top: 0.15rem;
+    }
+    
+    .time-display {
+        font-family: monospace;
+        background-color: #f8f9fc;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+    }
+    
+    .delete-btn {
+        transition: all 0.2s ease;
+    }
+    
+    .delete-btn:hover {
+        transform: scale(1.1);
+        background-color: #e74a3b !important;
+        color: white !important;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-6">
         <div class="card mb-4">
-            <div class="card-header bg-primary text-white">
-                <h5>Add Event</h5>
+            <div class="card-header bg-primary text-white d-flex align-items-center">
+                <i class="bi bi-calendar-plus me-2"></i>
+                <h5 class="mb-0">Add Event</h5>
             </div>
             <div class="card-body">
                 <form id="event-form">
@@ -37,8 +216,8 @@
                         <label class="form-label">Description</label>
                         <textarea class="form-control" id="event-description" rows="3"></textarea>
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="event-recurring">
+                    <div class="mb-3 form-check form-switch">
+                        <input type="checkbox" class="form-check-input" id="event-recurring" role="switch">
                         <label class="form-check-label" for="event-recurring">Recurring Event</label>
                     </div>
                     <div class="mb-3" id="recurrence-options" style="display: none;">
@@ -50,7 +229,9 @@
                             <option value="yearly">Yearly</option>
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Event</button>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle me-2"></i>Add Event
+                    </button>
                 </form>
             </div>
         </div>
@@ -58,8 +239,9 @@
     
     <div class="col-md-6">
         <div class="card mb-4">
-            <div class="card-header bg-success text-white">
-                <h5>Add Task</h5>
+            <div class="card-header bg-success text-white d-flex align-items-center">
+                <i class="bi bi-check-square me-2"></i>
+                <h5 class="mb-0">Add Task</h5>
             </div>
             <div class="card-body">
                 <form id="task-form">
@@ -83,7 +265,9 @@
                         <label class="form-label">Description</label>
                         <textarea class="form-control" id="task-description" rows="3"></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-plus-circle me-2"></i>Add Task
+                    </button>
                 </form>
             </div>
         </div>
@@ -94,10 +278,16 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Calendar & Events</h5>
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-light" id="view-events">Events</button>
-                    <button class="btn btn-sm btn-outline-light" id="view-tasks">Tasks</button>
+                <h5 class="mb-0 d-flex align-items-center">
+                    <i class="bi bi-calendar-event me-2"></i>Calendar & Events
+                </h5>
+                <div class="btn-group view-toggle" role="group">
+                    <button class="btn btn-light" id="view-events">
+                        <i class="bi bi-calendar-event me-1"></i>Events
+                    </button>
+                    <button class="btn btn-outline-light" id="view-tasks">
+                        <i class="bi bi-check-square me-1"></i>Tasks
+                    </button>
                 </div>
             </div>
             <div class="card-body">
