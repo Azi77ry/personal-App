@@ -1,730 +1,192 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Money & Event Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --info: #4895ef;
-            --warning: #f72585;
-            --danger: #e63946;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --sidebar-width: 280px;
-            --header-height: 70px;
-            --border-radius: 12px;
-            --transition: all 0.3s ease;
-            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --hover-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-        }
+{% extends "base.html" %}
 
-        [data-theme="dark"] {
-            --bg-color: #121826;
-            --card-bg: #1f2937;
-            --text-color: #e5e7eb;
-            --border-color: #374151;
-            --light: #1f2937;
-            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            --hover-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-        }
-
-        [data-theme="light"] {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #334155;
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: var(--transition);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 1.5rem 1rem;
-            color: white;
-            transition: var(--transition);
-            z-index: 1000;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 0 0 1.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 1.5rem;
-        }
-
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1.4rem;
-            color: white;
-            text-decoration: none;
-        }
-
-        .sidebar-brand i {
-            font-size: 1.8rem;
-            margin-right: 10px;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            font-weight: 500;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-        }
-
-        .nav-link i {
-            margin-right: 12px;
-            font-size: 1.2rem;
-        }
-
-        .sidebar-footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0;
-        }
-
-        .user-role {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: var(--transition);
-            padding: 1.5rem;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 0 1.5rem 0;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .page-title h1 {
-            font-weight: 700;
-            font-size: 1.8rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .page-title p {
-            color: #6b7280;
-            margin-bottom: 0;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            width: 50px;
-            height: 26px;
-            background: var(--card-bg);
-            border-radius: 50px;
-            position: relative;
-            cursor: pointer;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            padding: 0 3px;
-            transition: var(--transition);
-        }
-
-        .theme-toggle-handle {
-            width: 20px;
-            height: 20px;
-            background: var(--primary);
-            border-radius: 50%;
-            position: absolute;
-            transition: var(--transition);
-        }
-
-        [data-theme="dark"] .theme-toggle-handle {
-            transform: translateX(24px);
-        }
-
-        /* Cards */
-        .card {
-            background: var(--card-bg);
-            border: none;
-            border-radius: var(--border-radius);
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            box-shadow: var(--hover-shadow);
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid var(--border-color);
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Stats Cards */
-        .stat-card {
-            text-align: center;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            background: var(--card-bg);
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-            height: 100%;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--hover-shadow);
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-title {
-            color: #6b7280;
-            font-weight: 500;
-            margin-bottom: 0;
-        }
-
-        /* Charts */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-
-        /* Activity Feed */
-        .activity-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-
-        .activity-content {
-            flex: 1;
-        }
-
-        .activity-title {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-
-        .activity-time {
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-
-        /* Buttons */
-        .btn {
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            padding: 0.5rem 1.25rem;
-            transition: var(--transition);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary);
-            border-color: var(--secondary);
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 260px;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .menu-toggle {
-                display: block;
-            }
-        }
-
-        /* Toggle button for mobile */
-        .menu-toggle {
-            display: none;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            width: 40px;
-            height: 40px;
-            border-radius: var(--border-radius);
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 992px) {
-            .menu-toggle {
-                display: flex;
-            }
-        }
-
-        /* Custom table styles */
-        .table {
-            color: var(--text-color);
-            border-color: var(--border-color);
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: rgba(var(--primary-rgb), 0.05);
-        }
-
-        /* Filter section */
-        .filter-section {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1.25rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--card-shadow);
-        }
-
-        /* Export buttons */
-        .export-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        /* Animation for charts loading */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .chart-container canvas {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        /* Dashboard grid layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Specific chart containers */
-        .chart-card {
-            grid-column: span 2;
-        }
-
-        @media (max-width: 1200px) {
-            .chart-card {
-                grid-column: span 1;
-            }
-        }
-    </style>
-</head>
-<body data-theme="light">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="/" class="sidebar-brand">
-                <i class="bi bi-wallet2"></i>
-                <span>MoneyManager</span>
-            </a>
+{% block content %}
+<div class="container-fluid">
+    <!-- Summary Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-balance">Tsh 0.00</div>
+                            <div class="mt-1 small text-muted" id="income-expense-difference">
+                                <span class="text-success"><i class="fas fa-caret-up"></i> 0%</span> from last month
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <ul class="sidebar-nav">
-            <li class="nav-item">
-                <a class="nav-link active" href="/">
-                    <i class="bi bi-house-door"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/money">
-                    <i class="bi bi-cash-coin"></i>
-                    <span>Money</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/events">
-                    <i class="bi bi-calendar-event"></i>
-                    <span>Events</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/reports">
-                    <i class="bi bi-graph-up"></i>
-                    <span>Reports</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/settings">
-                    <i class="bi bi-gear"></i>
-                    <span>Settings</span>
-                </a>
-            </li>
-        </ul>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Income</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-income">Tsh 0.00</div>
+                            <div class="mt-1 small text-muted" id="income-period-comparison">
+                                <span class="text-success"><i class="fas fa-caret-up"></i> 0%</span> from last month
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div class="sidebar-footer">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="bi bi-person"></i>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Expenses</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-expenses">Tsh 0.00</div>
+                            <div class="mt-1 small text-muted" id="expense-period-comparison">
+                                <span class="text-danger"><i class="fas fa-caret-up"></i> 0%</span> from last month
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
-                <div class="user-details">
-                    <p class="user-name">{{ current_user.username }}</p>
-                    <p class="user-role">Administrator</p>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Upcoming Bills</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="upcoming-bills-count">0</div>
+                            <div class="mt-1 small text-muted" id="bills-total-amount">Total: Tsh 0.00</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice-dollar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
-                <a href="/logout" class="text-white ms-2">
-                    <i class="bi bi-box-arrow-right"></i>
-                </a>
             </div>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Header -->
-        <div class="header">
-            <div class="page-title">
-                <h1>Dashboard</h1>
-                <p>Welcome back, {{ current_user.username }}! Here's your financial overview.</p>
-            </div>
-            <div class="header-actions">
-                <div class="theme-toggle" id="themeToggle">
-                    <div class="theme-toggle-handle"></div>
+    <!-- Charts Row -->
+    <div class="row">
+        <!-- Monthly Trends -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Monthly Income vs Expenses</h6>
+                    <select class="form-select form-select-sm" id="trend-period" style="width: auto;">
+                        <option value="3">Last 3 Months</option>
+                        <option value="6">Last 6 Months</option>
+                        <option value="12" selected>Last 12 Months</option>
+                    </select>
                 </div>
-                <button class="menu-toggle" id="menuToggle">
-                    <i class="bi bi-list"></i>
-                </button>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="monthlyTrendsChart" height="100"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Filter Section -->
-        <div class="filter-section">
+        <!-- Spending by Category -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Spending by Category</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small" id="category-legend">
+                        <!-- Dynamic legend will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Middle Row -->
+    <div class="row">
+        <!-- Recent Transactions -->
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Transactions</h6>
+                    <a href="/money" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-transactions">
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Events & Tasks -->
+        <div class="col-lg-5 mb-4">
             <div class="row">
-                <div class="col-md-3 mb-2">
-                    <label for="dateRange" class="form-label">Date Range</label>
-                    <select class="form-select" id="dateRange">
-                        <option value="7">Last 7 Days</option>
-                        <option value="30" selected>Last 30 Days</option>
-                        <option value="90">Last 90 Days</option>
-                        <option value="365">Last Year</option>
-                        <option value="custom">Custom Range</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-2">
-                    <label for="categoryFilter" class="form-label">Category</label>
-                    <select class="form-select" id="categoryFilter">
-                        <option value="">All Categories</option>
-                        <option value="food">Food & Dining</option>
-                        <option value="transport">Transportation</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="utilities">Utilities</option>
-                        <option value="shopping">Shopping</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-2">
-                    <label for="userFilter" class="form-label">User</label>
-                    <select class="form-select" id="userFilter">
-                        <option value="">All Users</option>
-                        <option value="user1">User 1</option>
-                        <option value="user2">User 2</option>
-                    </select>
-                </div>
-                <div class="col-md-3 mb-2 d-flex align-items-end">
-                    <div class="export-buttons">
-                        <button class="btn btn-outline-primary">
-                            <i class="bi bi-download me-1"></i> CSV
-                        </button>
-                        <button class="btn btn-outline-primary">
-                            <i class="bi bi-file-earmark-pdf me-1"></i> PDF
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Overview -->
-        <div class="dashboard-grid">
-            <div class="stat-card">
-                <div class="stat-icon bg-primary bg-opacity-10 text-primary">
-                    <i class="bi bi-currency-dollar"></i>
-                </div>
-                <h3 class="stat-value text-primary" id="total-income">$0</h3>
-                <p class="stat-title">Total Income</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-danger bg-opacity-10 text-danger">
-                    <i class="bi bi-currency-exchange"></i>
-                </div>
-                <h3 class="stat-value text-danger" id="total-expense">$0</h3>
-                <p class="stat-title">Total Expenses</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-success bg-opacity-10 text-success">
-                    <i class="bi bi-piggy-bank"></i>
-                </div>
-                <h3 class="stat-value text-success" id="balance">$0</h3>
-                <p class="stat-title">Current Balance</p>
-            </div>
-            
-            <div class="stat-card">
-                <div class="stat-icon bg-info bg-opacity-10 text-info">
-                    <i class="bi bi-people"></i>
-                </div>
-                <h3 class="stat-value text-info">4</h3>
-                <p class="stat-title">Active Users</p>
-            </div>
-        </div>
-
-        <!-- Charts Section -->
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Income & Expense Trends</h5>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                Monthly
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Weekly</a></li>
-                                <li><a class="dropdown-item" href="#">Monthly</a></li>
-                                <li><a class="dropdown-item" href="#">Yearly</a></li>
-                            </ul>
+                <div class="col-12 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-warning">Upcoming Events</h6>
+                            <a href="/events" class="btn btn-sm btn-warning">View All</a>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="trendChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Expense Categories</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="categoryChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Additional Charts -->
-        <div class="row mt-4">
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Weekly Activities</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="weeklyActivityChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Expense Forecast</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="forecastChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Recent Activity</h5>
-                        <a href="#" class="btn btn-sm btn-primary">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="activity-feed">
-                            <div class="activity-item">
-                                <div class="activity-icon bg-primary bg-opacity-10 text-primary">
-                                    <i class="bi bi-cash-coin"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6 class="activity-title">New expense added - Food & Dining</h6>
-                                    <p class="activity-time">2 hours ago</p>
-                                </div>
-                                <div class="activity-amount text-danger">-$42.50</div>
-                            </div>
-                            
-                            <div class="activity-item">
-                                <div class="activity-icon bg-success bg-opacity-10 text-success">
-                                    <i class="bi bi-currency-dollar"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6 class="activity-title">Salary received</h6>
-                                    <p class="activity-time">1 day ago</p>
-                                </div>
-                                <div class="activity-amount text-success">+$2,500.00</div>
-                            </div>
-                            
-                            <div class="activity-item">
-                                <div class="activity-icon bg-info bg-opacity-10 text-info">
-                                    <i class="bi bi-calendar-event"></i>
-                                </div>
-                                <div class="activity-content">
-                                    <h6 class="activity-title">Meeting scheduled - Project Review</h6>
-                                    <p class="activity-time">2 days ago</p>
+                        <div class="card-body p-0">
+                            <div id="upcoming-events-list" class="list-group list-group-flush">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div class="activity-item">
-                                <div class="activity-icon bg-warning bg-opacity-10 text-warning">
-                                    <i class="bi bi-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-info">Pending Tasks</h6>
+                            <a href="/events" class="btn btn-sm btn-info text-white">View All</a>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="pending-tasks-list" class="list-group list-group-flush">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
                                 </div>
-                                <div class="activity-content">
-                                    <h6 class="activity-title">Bill payment - Electricity</h6>
-                                    <p class="activity-time">3 days ago</p>
-                                </div>
-                                <div class="activity-amount text-danger">-$85.30</div>
                             </div>
                         </div>
                     </div>
@@ -733,85 +195,600 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Quick Stats Row -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Income Sources</h6>
+                </div>
+                <div class="card-body" id="top-income-sources">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Spending Categories</h6>
+                </div>
+                <div class="card-body" id="top-expense-categories">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Financial Health</h6>
+                </div>
+                <div class="card-body" id="financial-health">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+
+<script>
+// Register plugins
+Chart.register(ChartDataLabels);
+Chart.register({
+    id: 'chartjs-plugin-annotation'
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart instances
+    let categoryChart, monthlyTrendsChart;
     
-    <script>
-        // Theme Toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-        
-        // Check for saved theme preference or respect OS preference
-        const savedTheme = localStorage.getItem('theme') || 
-                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        body.setAttribute('data-theme', savedTheme);
-        
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+    // Professional color palette
+    const chartColors = {
+        primary: '#4e73df',
+        success: '#1cc88a',
+        info: '#36b9cc',
+        warning: '#f6c23e',
+        danger: '#e74a3b',
+        secondary: '#858796',
+        dark: '#5a5c69',
+        light: '#f8f9fc'
+    };
+    
+    // Extended color palette for categories
+    const extendedColors = [
+        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', 
+        '#858796', '#f8f9fc', '#5a5c69', '#2e59d9', '#17a673',
+        '#2c9faf', '#dda20a', '#be2617', '#656769', '#e3e6f0'
+    ];
+    
+    // Format currency
+    function formatCurrency(amount) {
+        return 'Tsh ' + parseFloat(amount).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
         });
-
-        // Mobile Menu Toggle
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.querySelector('.sidebar');
-        
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
+    }
+    
+    // Calculate percentage change
+    function calculatePercentageChange(current, previous) {
+        if (previous === 0) return current > 0 ? 100 : 0;
+        return ((current - previous) / previous) * 100;
+    }
+    
+    // Load financial summary
+    function loadFinancialSummary() {
+        Promise.all([
+            fetch('/api/get_incomes').then(res => res.json()),
+            fetch('/api/get_expenses').then(res => res.json()),
+            fetch('/api/get_bills').then(res => res.json())
+        ]).then(([incomes, expenses, bills]) => {
+            // Calculate totals for current month
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            const currentMonthIncomes = Object.values(incomes).filter(income => {
+                const date = new Date(income.date);
+                return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+            }).reduce((sum, income) => sum + parseFloat(income.amount), 0);
+            
+            const currentMonthExpenses = Object.values(expenses).filter(expense => {
+                const date = new Date(expense.date);
+                return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+            }).reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            
+            // Calculate totals for previous month
+            const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+            
+            const prevMonthIncomes = Object.values(incomes).filter(income => {
+                const date = new Date(income.date);
+                return date.getMonth() === prevMonth && date.getFullYear() === prevYear;
+            }).reduce((sum, income) => sum + parseFloat(income.amount), 0);
+            
+            const prevMonthExpenses = Object.values(expenses).filter(expense => {
+                const date = new Date(expense.date);
+                return date.getMonth() === prevMonth && date.getFullYear() === prevYear;
+            }).reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            
+            // Calculate all-time totals
+            const totalIncome = Object.values(incomes).reduce((sum, income) => sum + parseFloat(income.amount), 0);
+            const totalExpense = Object.values(expenses).reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            const balance = totalIncome - totalExpense;
+            
+            // Calculate percentage changes
+            const incomeChange = calculatePercentageChange(currentMonthIncomes, prevMonthIncomes);
+            const expenseChange = calculatePercentageChange(currentMonthExpenses, prevMonthExpenses);
+            const balanceChange = calculatePercentageChange(
+                currentMonthIncomes - currentMonthExpenses, 
+                prevMonthIncomes - prevMonthExpenses
+            );
+            
+            // Update DOM
+            document.getElementById('total-balance').textContent = formatCurrency(balance);
+            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('total-expenses').textContent = formatCurrency(totalExpense);
+            
+            // Update comparison texts
+            document.getElementById('income-expense-difference').innerHTML = `
+                <span class="${balanceChange >= 0 ? 'text-success' : 'text-danger'}">
+                    <i class="fas fa-caret-${balanceChange >= 0 ? 'up' : 'down'}"></i> ${Math.abs(balanceChange).toFixed(1)}%
+                </span> from last month
+            `;
+            
+            document.getElementById('income-period-comparison').innerHTML = `
+                <span class="${incomeChange >= 0 ? 'text-success' : 'text-danger'}">
+                    <i class="fas fa-caret-${incomeChange >= 0 ? 'up' : 'down'}"></i> ${Math.abs(incomeChange).toFixed(1)}%
+                </span> from last month
+            `;
+            
+            document.getElementById('expense-period-comparison').innerHTML = `
+                <span class="${expenseChange <= 0 ? 'text-success' : 'text-danger'}">
+                    <i class="fas fa-caret-${expenseChange <= 0 ? 'down' : 'up'}"></i> ${Math.abs(expenseChange).toFixed(1)}%
+                </span> from last month
+            `;
+            
+            // Calculate and display upcoming bills
+            const nowDate = new Date();
+            const upcomingBills = Object.values(bills).filter(bill => {
+                const dueDate = new Date(bill.due_date);
+                return dueDate >= nowDate && !bill.paid;
+            });
+            
+            document.getElementById('upcoming-bills-count').textContent = upcomingBills.length;
+            
+            const billsTotal = upcomingBills.reduce((sum, bill) => sum + parseFloat(bill.amount), 0);
+            document.getElementById('bills-total-amount').textContent = `Total: ${formatCurrency(billsTotal)}`;
+            
+            // Load additional components
+            loadCategoryChart();
+            loadMonthlyTrendsChart();
+            loadTopIncomeSources(incomes);
+            loadTopExpenseCategories(expenses);
+            loadFinancialHealthMetrics(incomes, expenses);
+        }).catch(error => {
+            console.error('Error loading financial summary:', error);
         });
-
-        // Sample data for charts (to be replaced with real data)
-        const financialData = {
-            income: [1200, 1900, 1500, 2100, 1800, 2200, 2400],
-            expenses: [800, 1100, 900, 1200, 1000, 1300, 1100],
-            categories: ['Food', 'Transport', 'Entertainment', 'Utilities', 'Shopping'],
-            categoryAmounts: [500, 300, 200, 250, 150],
-            weeklyActivities: [15, 22, 18, 25, 20, 30, 28],
-            forecast: [1100, 1150, 1200, 1250, 1300, 1350]
-        };
-
-        // Initialize Charts
-        function initCharts() {
-            // Trend Chart (Income vs Expenses)
-            const trendCtx = document.getElementById('trendChart').getContext('2d');
-            const trendChart = new Chart(trendCtx, {
-                type: 'line',
+    }
+    
+    // Load upcoming events
+    function loadUpcomingEvents() {
+        fetch('/api/get_events')
+            .then(response => response.json())
+            .then(events => {
+                const container = document.getElementById('upcoming-events-list');
+                
+                if (Object.keys(events).length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-muted">No upcoming events</div>';
+                    return;
+                }
+                
+                // Get current date
+                const now = new Date();
+                
+                // Filter and sort events (next 7 days)
+                const upcomingEvents = Object.values(events)
+                    .filter(event => new Date(event.start) >= now)
+                    .sort((a, b) => new Date(a.start) - new Date(b.start))
+                    .slice(0, 3); // Show only 3 upcoming events
+                
+                if (upcomingEvents.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-muted">No upcoming events</div>';
+                    return;
+                }
+                
+                let html = '';
+                
+                upcomingEvents.forEach(event => {
+                    const startDate = new Date(event.start);
+                    const endDate = event.end ? new Date(event.end) : null;
+                    
+                    html += `
+                        <div class="list-group-item border-0">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1 text-truncate">${event.title}</h6>
+                                <small class="text-muted">${startDate.toLocaleDateString()}</small>
+                            </div>
+                            <p class="mb-1 small text-truncate">${startDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} 
+                            ${endDate ? `- ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}` : ''}</p>
+                            <small class="text-muted text-truncate d-block">${event.description || 'No description'}</small>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading events:', error);
+                document.getElementById('upcoming-events-list').innerHTML = '<div class="text-center py-4 text-danger">Error loading events</div>';
+            });
+    }
+    
+    // Load pending tasks
+    function loadPendingTasks() {
+        fetch('/api/get_tasks')
+            .then(response => response.json())
+            .then(tasks => {
+                const container = document.getElementById('pending-tasks-list');
+                
+                if (Object.keys(tasks).length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
+                    return;
+                }
+                
+                // Filter pending tasks (not completed)
+                const pendingTasks = Object.values(tasks)
+                    .filter(task => !task.completed)
+                    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
+                    .slice(0, 3); // Show only 3 tasks
+                
+                if (pendingTasks.length === 0) {
+                    container.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
+                    return;
+                }
+                
+                let html = '';
+                
+                pendingTasks.forEach(task => {
+                    const dueDate = new Date(task.due_date);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    let dueText = dueDate.toLocaleDateString();
+                    let textClass = 'text-muted';
+                    
+                    if (dueDate < today) {
+                        textClass = 'text-danger';
+                        dueText = 'Overdue';
+                    } else if (dueDate.getDate() === today.getDate() && 
+                               dueDate.getMonth() === today.getMonth() && 
+                               dueDate.getFullYear() === today.getFullYear()) {
+                        textClass = 'text-warning';
+                        dueText = 'Due today';
+                    }
+                    
+                    html += `
+                        <div class="list-group-item border-0">
+                            <div class="d-flex w-100 justify-content-between align-items-center">
+                                <h6 class="mb-1 text-truncate">${task.name}</h6>
+                                <small class="${textClass}">${dueText}</small>
+                            </div>
+                            <p class="mb-1 small">
+                                Priority: 
+                                <span class="badge bg-${task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'}">
+                                    ${task.priority}
+                                </span>
+                            </p>
+                            <small class="text-muted text-truncate d-block">${task.description || 'No description'}</small>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error loading tasks:', error);
+                document.getElementById('pending-tasks-list').innerHTML = '<div class="text-center py-4 text-danger">Error loading tasks</div>';
+            });
+    }
+    
+    // Load recent transactions
+    function loadRecentTransactions() {
+        Promise.all([
+            fetch('/api/get_incomes').then(res => res.json()),
+            fetch('/api/get_expenses').then(res => res.json())
+        ]).then(([incomes, expenses]) => {
+            const container = document.getElementById('recent-transactions');
+            
+            // Combine and sort transactions
+            let allTransactions = [];
+            
+            // Add incomes
+            Object.entries(incomes).forEach(([id, income]) => {
+                allTransactions.push({
+                    id,
+                    type: 'income',
+                    date: income.date,
+                    description: income.source,
+                    category: 'Income',
+                    amount: income.amount,
+                    originalData: income
+                });
+            });
+            
+            // Add expenses
+            Object.entries(expenses).forEach(([id, expense]) => {
+                allTransactions.push({
+                    id,
+                    type: 'expense',
+                    date: expense.date,
+                    description: expense.description || expense.category,
+                    category: expense.category,
+                    amount: -expense.amount, // Negative for expenses
+                    originalData: expense
+                });
+            });
+            
+            // Sort by date (newest first)
+            allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Take only the 5 most recent
+            const recentTransactions = allTransactions.slice(0, 5);
+            
+            if (recentTransactions.length === 0) {
+                container.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">No transactions found</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            
+            recentTransactions.forEach(transaction => {
+                const isIncome = transaction.type === 'income';
+                const amountClass = isIncome ? 'text-success' : 'text-danger';
+                const amountPrefix = isIncome ? '+' : '-';
+                
+                html += `
+                    <tr>
+                        <td>${new Date(transaction.date).toLocaleDateString()}</td>
+                        <td class="text-truncate" style="max-width: 150px;" title="${transaction.description}">${transaction.description}</td>
+                        <td><span class="badge bg-secondary">${transaction.category}</span></td>
+                        <td class="text-end ${amountClass} fw-bold">${amountPrefix}${formatCurrency(Math.abs(transaction.amount))}</td>
+                    </tr>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }).catch(error => {
+            console.error('Error loading transactions:', error);
+            document.getElementById('recent-transactions').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Error loading transactions</td></tr>';
+        });
+    }
+    
+    // Load category chart
+    function loadCategoryChart() {
+        fetch('/api/get_expenses')
+            .then(response => response.json())
+            .then(data => {
+                const expenses = Object.values(data);
+                
+                const categoryTotals = {};
+                expenses.forEach(expense => {
+                    if (!categoryTotals[expense.category]) {
+                        categoryTotals[expense.category] = 0;
+                    }
+                    categoryTotals[expense.category] += parseFloat(expense.amount);
+                });
+                
+                const categories = Object.keys(categoryTotals);
+                const amounts = Object.values(categoryTotals);
+                
+                // Sort by amount (descending)
+                const sortedIndices = [...Array(categories.length).keys()]
+                    .sort((a, b) => amounts[b] - amounts[a]);
+                
+                const sortedCategories = sortedIndices.map(i => categories[i]);
+                const sortedAmounts = sortedIndices.map(i => amounts[i]);
+                const sortedColors = sortedIndices.map(i => extendedColors[i % extendedColors.length]);
+                
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                
+                if (categoryChart) {
+                    categoryChart.destroy();
+                }
+                
+                // Generate legend HTML
+                const legendHtml = generateCategoryLegend(sortedCategories, sortedAmounts, sortedColors);
+                document.getElementById('category-legend').innerHTML = legendHtml;
+                
+                categoryChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sortedCategories,
+                        datasets: [{
+                            data: sortedAmounts,
+                            backgroundColor: sortedColors,
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.raw || 0;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((value / total) * 100);
+                                        return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                    }
+                                }
+                            },
+                            datalabels: {
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold',
+                                    size: 10
+                                },
+                                formatter: (value, ctx) => {
+                                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return percentage > 5 ? `${percentage}%` : '';
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error loading category chart:', error);
+            });
+    }
+    
+    // Generate category legend
+    function generateCategoryLegend(labels, data, colors) {
+        let html = '<div class="row">';
+        
+        labels.forEach((label, i) => {
+            const percentage = Math.round((data[i] / data.reduce((a, b) => a + b, 0)) * 100);
+            html += `
+                <div class="col-6 mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2" style="width: 12px; height: 12px; background-color: ${colors[i]}; border-radius: 2px;"></div>
+                        <div class="small" style="line-height: 1;">
+                            <div class="font-weight-bold text-truncate">${label}</div>
+                            <div class="text-gray-600">${formatCurrency(data[i])} (${percentage}%)</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        return html;
+    }
+    
+    // Load monthly trends chart
+    function loadMonthlyTrendsChart(months = 12) {
+        Promise.all([
+            fetch('/api/get_incomes').then(res => res.json()),
+            fetch('/api/get_expenses').then(res => res.json())
+        ]).then(([incomes, expenses]) => {
+            const now = new Date();
+            const startDate = new Date(now.getFullYear(), now.getMonth() - months, 1);
+            
+            // Filter data for the selected period
+            const filteredIncomes = Object.values(incomes)
+                .filter(income => new Date(income.date) >= startDate);
+            const filteredExpenses = Object.values(expenses)
+                .filter(expense => new Date(expense.date) >= startDate);
+            
+            // Group by month
+            const monthlyData = {};
+            
+            // Initialize all months in the period
+            for (let i = 0; i < months; i++) {
+                const date = new Date(now.getFullYear(), now.getMonth() - months + i + 1, 1);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                monthlyData[monthKey] = {
+                    income: 0,
+                    expense: 0,
+                    label: `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`
+                };
+            }
+            
+            // Process incomes
+            filteredIncomes.forEach(income => {
+                const date = new Date(income.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (monthlyData[monthKey]) {
+                    monthlyData[monthKey].income += parseFloat(income.amount);
+                }
+            });
+            
+            // Process expenses
+            filteredExpenses.forEach(expense => {
+                const date = new Date(expense.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                if (monthlyData[monthKey]) {
+                    monthlyData[monthKey].expense += parseFloat(expense.amount);
+                }
+            });
+            
+            // Prepare chart data
+            const labels = Object.values(monthlyData).map(item => item.label);
+            const incomeData = Object.values(monthlyData).map(item => item.income);
+            const expenseData = Object.values(monthlyData).map(item => item.expense);
+            
+            const ctx = document.getElementById('monthlyTrendsChart').getContext('2d');
+            
+            if (monthlyTrendsChart) {
+                monthlyTrendsChart.destroy();
+            }
+            
+            monthlyTrendsChart = new Chart(ctx, {
+                type: 'bar',
                 data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: labels,
                     datasets: [
                         {
                             label: 'Income',
-                            data: financialData.income,
-                            borderColor: '#4361ee',
-                            backgroundColor: 'rgba(67, 97, 238, 0.1)',
-                            tension: 0.3,
-                            fill: true
+                            data: incomeData,
+                            backgroundColor: chartColors.success,
+                            borderColor: chartColors.success,
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            barPercentage: 0.6
                         },
                         {
                             label: 'Expenses',
-                            data: financialData.expenses,
-                            borderColor: '#e63946',
-                            backgroundColor: 'rgba(230, 57, 70, 0.1)',
-                            tension: 0.3,
-                            fill: true
+                            data: expenseData,
+                            backgroundColor: chartColors.danger,
+                            borderColor: chartColors.danger,
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            barPercentage: 0.6
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    },
                     scales: {
                         y: {
                             beginAtZero: true,
                             grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                },
+                                maxTicksLimit: 6
                             }
                         },
                         x: {
@@ -819,225 +796,297 @@
                                 display: false
                             }
                         }
-                    }
-                }
-            });
-
-            // Category Chart
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            const categoryChart = new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: financialData.categories,
-                    datasets: [{
-                        data: financialData.categoryAmounts,
-                        backgroundColor: [
-                            '#4361ee',
-                            '#3f37c9',
-                            '#4cc9f0',
-                            '#4895ef',
-                            '#f72585'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-
-            // Weekly Activity Chart
-            const weeklyCtx = document.getElementById('weeklyActivityChart').getContext('2d');
-            const weeklyChart = new Chart(weeklyCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                    datasets: [{
-                        label: 'Activities',
-                        data: financialData.weeklyActivities,
-                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
-                        borderRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Forecast Chart
-            const forecastCtx = document.getElementById('forecastChart').getContext('2d');
-            const forecastChart = new Chart(forecastCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Next Week', '2 Weeks', '3 Weeks', '4 Weeks', '5 Weeks', '6 Weeks'],
-                    datasets: [{
-                        label: 'Expense Forecast',
-                        data: financialData.forecast,
-                        borderColor: '#f72585',
-                        backgroundColor: 'rgba(247, 37, 133, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
+                                }
                             }
                         }
                     }
                 }
             });
-
-            return { trendChart, categoryChart, weeklyChart, forecastChart };
-        }
-
-        // Initialize charts when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            const charts = initCharts();
-            
-            // Simulate real-time updates every 30 seconds
-            setInterval(() => {
-                // This would be replaced with actual API calls in a real application
-                simulateDataUpdate(charts);
-            }, 30000);
-            
-            // Load initial financial data
-            loadFinancialData();
+        })
+        .catch(error => {
+            console.error('Error loading monthly trends chart:', error);
         });
-
-        // Simulate data updates for charts
-        function simulateDataUpdate(charts) {
-            // Randomly update data values slightly
-            charts.trendChart.data.datasets.forEach(dataset => {
-                dataset.data = dataset.data.map(value => 
-                    Math.max(500, value + (Math.random() * 200 - 100))
-                );
-            });
-            
-            charts.categoryChart.data.datasets[0].data = 
-                charts.categoryChart.data.datasets[0].data.map(value => 
-                    Math.max(50, value + (Math.random() * 50 - 25))
-                );
-            
-            charts.weeklyChart.data.datasets[0].data = 
-                charts.weeklyChart.data.datasets[0].data.map(value => 
-                    Math.max(5, value + (Math.random() * 5 - 2))
-                );
-            
-            charts.forecastChart.data.datasets[0].data = 
-                charts.forecastChart.data.datasets[0].data.map(value => 
-                    Math.max(800, value + (Math.random() * 100 - 50))
-                );
-            
-            // Update all charts
-            Object.values(charts).forEach(chart => chart.update());
-            
-            // Also update the financial stats
-            updateFinancialStats();
+    }
+    
+    // Load top income sources
+    function loadTopIncomeSources(incomes) {
+        const container = document.getElementById('top-income-sources');
+        
+        if (Object.keys(incomes).length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-muted">No income data</div>';
+            return;
         }
-
-        // Load financial data from API
-        function loadFinancialData() {
-            // This would be replaced with actual API calls in your application
-            fetch('/api/get_financial_summary')
-                .then(response => response.json())
-                .then(data => {
-                    updateFinancialStats(data);
-                })
-                .catch(error => {
-                    console.error('Error loading financial data:', error);
-                    // Set some demo data if API fails
-                    updateFinancialStats({
-                        total_income: 4250.75,
-                        total_expense: 2180.30,
-                        balance: 2070.45
-                    });
-                });
-        }
-
-        // Update financial stats on the page
-        function updateFinancialStats(data = null) {
-            if (data) {
-                document.getElementById('total-income').textContent = `$${data.total_income.toFixed(2)}`;
-                document.getElementById('total-expense').textContent = `$${data.total_expense.toFixed(2)}`;
-                document.getElementById('balance').textContent = `$${data.balance.toFixed(2)}`;
-            } else {
-                // Just add some random fluctuation for the demo
-                const incomeElem = document.getElementById('total-income');
-                const expenseElem = document.getElementById('total-expense');
-                const balanceElem = document.getElementById('balance');
-                
-                const currentIncome = parseFloat(incomeElem.textContent.substring(1));
-                const currentExpense = parseFloat(expenseElem.textContent.substring(1));
-                
-                const newIncome = Math.max(0, currentIncome + (Math.random() * 100 - 50));
-                const newExpense = Math.max(0, currentExpense + (Math.random() * 50 - 25));
-                const newBalance = newIncome - newExpense;
-                
-                incomeElem.textContent = `$${newIncome.toFixed(2)}`;
-                expenseElem.textContent = `$${newExpense.toFixed(2)}`;
-                balanceElem.textContent = `$${newBalance.toFixed(2)}`;
+        
+        // Group by source
+        const sourceTotals = {};
+        Object.values(incomes).forEach(income => {
+            if (!sourceTotals[income.source]) {
+                sourceTotals[income.source] = 0;
             }
-        }
-
-        // Filter functionality
-        document.getElementById('dateRange').addEventListener('change', function() {
-            // This would trigger a reload of data based on the selected filter
-            loadFinancialData();
-            
-            // Show loading state
-            Swal.fire({
-                title: 'Updating data...',
-                timer: 1000,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+            sourceTotals[income.source] += parseFloat(income.amount);
         });
+        
+        // Sort by amount (descending)
+        const sortedSources = Object.entries(sourceTotals)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5); // Top 5 sources
+        
+        if (sortedSources.length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-muted">No income data</div>';
+            return;
+        }
+        
+        const totalIncome = Object.values(incomes).reduce((sum, income) => sum + parseFloat(income.amount), 0);
+        
+        let html = '';
+        sortedSources.forEach(([source, amount]) => {
+            const percentage = Math.round((amount / totalIncome) * 100);
+            
+            html += `
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-truncate me-2">${source}</span>
+                        <span class="fw-bold">${formatCurrency(amount)}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: ${percentage}%;" 
+                             aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="small text-muted text-end">${percentage}% of total</div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    // Load top expense categories
+    function loadTopExpenseCategories(expenses) {
+        const container = document.getElementById('top-expense-categories');
+        
+        if (Object.keys(expenses).length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-muted">No expense data</div>';
+            return;
+        }
+        
+        // Group by category
+        const categoryTotals = {};
+        Object.values(expenses).forEach(expense => {
+            if (!categoryTotals[expense.category]) {
+                categoryTotals[expense.category] = 0;
+            }
+            categoryTotals[expense.category] += parseFloat(expense.amount);
+        });
+        
+        // Sort by amount (descending)
+        const sortedCategories = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5); // Top 5 categories
+        
+        if (sortedCategories.length === 0) {
+            container.innerHTML = '<div class="text-center py-4 text-muted">No expense data</div>';
+            return;
+        }
+        
+        const totalExpense = Object.values(expenses).reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+        
+        let html = '';
+        sortedCategories.forEach(([category, amount]) => {
+            const percentage = Math.round((amount / totalExpense) * 100);
+            
+            html += `
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-truncate me-2">${category}</span>
+                        <span class="fw-bold">${formatCurrency(amount)}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: ${percentage}%;" 
+                             aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <div class="small text-muted text-end">${percentage}% of total</div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    // Load financial health metrics
+    function loadFinancialHealthMetrics(incomes, expenses) {
+        const container = document.getElementById('financial-health');
+        
+        // Calculate metrics
+        const totalIncome = Object.values(incomes).reduce((sum, income) => sum + parseFloat(income.amount), 0);
+        const totalExpense = Object.values(expenses).reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+        const savings = totalIncome - totalExpense;
+        const savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
+        
+        // Determine financial health status
+        let healthStatus, healthClass, healthIcon;
+        
+        if (savingsRate >= 20) {
+            healthStatus = 'Excellent';
+            healthClass = 'text-success';
+            healthIcon = 'fas fa-check-circle';
+        } else if (savingsRate >= 10) {
+            healthStatus = 'Good';
+            healthClass = 'text-info';
+            healthIcon = 'fas fa-info-circle';
+        } else if (savingsRate >= 0) {
+            healthStatus = 'Fair';
+            healthClass = 'text-warning';
+            healthIcon = 'fas fa-exclamation-circle';
+        } else {
+            healthStatus = 'Poor';
+            healthClass = 'text-danger';
+            healthIcon = 'fas fa-times-circle';
+        }
+        
+        const html = `
+            <div class="text-center mb-4">
+                <div class="${healthClass} mb-2">
+                    <i class="${healthIcon} fa-3x"></i>
+                </div>
+                <h4 class="${healthClass}">${healthStatus}</h4>
+                <p class="text-muted">Financial Health</p>
+            </div>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span>Savings Rate</span>
+                    <span class="fw-bold ${savingsRate >= 0 ? 'text-success' : 'text-danger'}">${savingsRate.toFixed(1)}%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar ${savingsRate >= 0 ? 'bg-success' : 'bg-danger'}" role="progressbar" 
+                         style="width: ${Math.min(Math.abs(savingsRate), 100)}%;" 
+                         aria-valuenow="${Math.abs(savingsRate)}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span>Income</span>
+                    <span class="fw-bold text-success">${formatCurrency(totalIncome)}</span>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span>Expenses</span>
+                    <span class="fw-bold text-danger">${formatCurrency(totalExpense)}</span>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span>Net Savings</span>
+                    <span class="fw-bold ${savings >= 0 ? 'text-success' : 'text-danger'}">${formatCurrency(savings)}</span>
+                </div>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+    }
+    
+    // Event listener for period selector
+    document.getElementById('trend-period').addEventListener('change', function() {
+        loadMonthlyTrendsChart(parseInt(this.value));
+    });
+    
+    // Initialize all dashboard components
+    loadFinancialSummary();
+    loadUpcomingEvents();
+    loadPendingTasks();
+    loadRecentTransactions();
+});
+</script>
 
-        // Similarly for other filters
-        document.getElementById('categoryFilter').addEventListener('change', loadFinancialData);
-        document.getElementById('userFilter').addEventListener('change', loadFinancialData);
-    </script>
-</body>
-</html>
+<style>
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    border-bottom: 1px solid #e3e6f0;
+    background: #fff;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.chart-area {
+    position: relative;
+    height: 20rem;
+}
+
+.chart-pie {
+    position: relative;
+    height: 15rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #6e707e;
+    padding: 1rem 0.75rem;
+}
+
+.table td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 1rem 1.25rem;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.progress {
+    border-radius: 0.35rem;
+}
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 0.35em 0.65em;
+}
+</style>
+{% endblock %}

@@ -1,250 +1,352 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-success text-white">
-                <h5>Add Income</h5>
-            </div>
-            <div class="card-body">
-                <form id="income-form">
-                    <div class="mb-3">
-                        <label class="form-label">Amount</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Tsh</span>
-                            <input type="number" step="0.01" class="form-control" id="income-amount" required>
+<div class="container-fluid">
+    <!-- Summary Cards Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-balance">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-gray-300"></i>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Source</label>
-                        <input type="text" class="form-control" id="income-source" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Date</label>
-                        <input type="date" class="form-control" id="income-date" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" id="income-description" rows="2"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Income</button>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-danger text-white">
-                <h5>Add Expense</h5>
-            </div>
-            <div class="card-body">
-                <form id="expense-form">
-                    <div class="mb-3">
-                        <label class="form-label">Amount</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Tsh</span>
-                            <input type="number" step="0.01" class="form-control" id="expense-amount" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Category</label>
-                        <select class="form-select" id="expense-category" required>
-                            <option value="">Select a category</option>
-                            <option value="food">Food</option>
-                            <option value="housing">Housing</option>
-                            <option value="transportation">Transportation</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="utilities">Utilities</option>
-                            <option value="health">Health</option>
-                            <option value="education">Education</option>
-                            <option value="shopping">Shopping</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Date</label>
-                        <input type="date" class="form-control" id="expense-date" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Description</label>
-                        <textarea class="form-control" id="expense-description" rows="2"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Expense</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-info text-white">
-                <h5>Set Budget</h5>
-            </div>
-            <div class="card-body">
-                <form id="budget-form">
-                    <div class="mb-3">
-                        <label class="form-label">Category</label>
-                        <select class="form-select" id="budget-category" required>
-                            <option value="">Select a category</option>
-                            <option value="food">Food</option>
-                            <option value="housing">Housing</option>
-                            <option value="transportation">Transportation</option>
-                            <option value="entertainment">Entertainment</option>
-                            <option value="utilities">Utilities</option>
-                            <option value="health">Health</option>
-                            <option value="education">Education</option>
-                            <option value="shopping">Shopping</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Amount</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Tsh</span>
-                            <input type="number" step="0.01" class="form-control" id="budget-amount" required>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Monthly Income</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthly-income">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Month</label>
-                        <input type="month" class="form-control" id="budget-month" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Set Budget</button>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-warning text-white">
-                <h5>Bill Reminders</h5>
-            </div>
-            <div class="card-body">
-                <form id="bill-form">
-                    <div class="mb-3">
-                        <label class="form-label">Bill Name</label>
-                        <input type="text" class="form-control" id="bill-name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Amount</label>
-                        <div class="input-group">
-                            <span class="input-group-text">Tsh</span>
-                            <input type="number" step="0.01" class="form-control" id="bill-amount" required>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Due Date</label>
-                        <input type="date" class="form-control" id="bill-due-date" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Recurring</label>
-                        <select class="form-select" id="bill-recurring">
-                            <option value="none">None</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Add Reminder</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Recent Transactions Section -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5>Recent Transactions</h5>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Monthly Expenses</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthly-expenses">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <ul class="nav nav-tabs" id="transactionsTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button">Expenses</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="incomes-tab" data-bs-toggle="tab" data-bs-target="#incomes" type="button">Incomes</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="bills-tab" data-bs-toggle="tab" data-bs-target="#bills" type="button">Bills</button>
-                    </li>
-                </ul>
-                <div class="tab-content" id="transactionsTabContent">
-                    <div class="tab-pane fade show active" id="expenses" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Category</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="expenses-list">
-                                    <tr>
-                                        <td colspan="5" class="text-center py-3">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Upcoming Bills</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="upcoming-bills">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="incomes" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Source</th>
-                                        <th>Description</th>
-                                        <th>Amount</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="incomes-list">
-                                    <tr>
-                                        <td colspan="5" class="text-center py-3">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forms Row -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        <i class="fas fa-plus-circle me-2"></i>Add Income
+                    </h6>
+                    <button class="btn btn-sm btn-link p-0 toggle-form">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form id="income-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Amount (Tsh)</label>
+                                <input type="number" step="0.01" class="form-control" id="income-amount" required placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" id="income-date" required>
+                            </div>
                         </div>
-                    </div>
-                    <div class="tab-pane fade" id="bills" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Due Date</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="bills-list">
-                                    <tr>
-                                        <td colspan="5" class="text-center py-3">
-                                            <div class="spinner-border text-primary" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="mb-3">
+                            <label class="form-label">Source</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
+                                <input type="text" class="form-control" id="income-source" required placeholder="Salary, Freelance, etc.">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description <small class="text-muted">(Optional)</small></label>
+                            <textarea class="form-control" id="income-description" rows="2" placeholder="Additional details"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-check me-2"></i>Add Income
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-info">
+                        <i class="fas fa-chart-pie me-2"></i>Set Budget
+                    </h6>
+                    <button class="btn btn-sm btn-link p-0 toggle-form">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form id="budget-form">
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="budget-category" required>
+                                <option value="">Select a category</option>
+                                <option value="food">Food</option>
+                                <option value="housing">Housing</option>
+                                <option value="transportation">Transportation</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="utilities">Utilities</option>
+                                <option value="health">Health</option>
+                                <option value="education">Education</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Amount (Tsh)</label>
+                                <input type="number" step="0.01" class="form-control" id="budget-amount" required placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Month</label>
+                                <input type="month" class="form-control" id="budget-month" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 text-white">
+                            <i class="fas fa-target me-2"></i>Set Budget
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-minus-circle me-2"></i>Add Expense
+                    </h6>
+                    <button class="btn btn-sm btn-link p-0 toggle-form">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form id="expense-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Amount (Tsh)</label>
+                                <input type="number" step="0.01" class="form-control" id="expense-amount" required placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control" id="expense-date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select class="form-select" id="expense-category" required>
+                                <option value="">Select a category</option>
+                                <option value="food">Food</option>
+                                <option value="housing">Housing</option>
+                                <option value="transportation">Transportation</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="utilities">Utilities</option>
+                                <option value="health">Health</option>
+                                <option value="education">Education</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description <small class="text-muted">(Optional)</small></label>
+                            <textarea class="form-control" id="expense-description" rows="2" placeholder="Additional details"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-check me-2"></i>Add Expense
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-bell me-2"></i>Bill Reminders
+                    </h6>
+                    <button class="btn btn-sm btn-link p-0 toggle-form">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <form id="bill-form">
+                        <div class="mb-3">
+                            <label class="form-label">Bill Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-file-invoice-dollar"></i></span>
+                                <input type="text" class="form-control" id="bill-name" required placeholder="Electricity, Water, etc.">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Amount (Tsh)</label>
+                                <input type="number" step="0.01" class="form-control" id="bill-amount" required placeholder="0.00">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="bill-due-date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Recurring</label>
+                            <select class="form-select" id="bill-recurring">
+                                <option value="none">None</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 text-white">
+                            <i class="fas fa-bell me-2"></i>Add Reminder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-history me-2"></i>Recent Transactions
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-tabs" id="transactionsTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses" type="button">
+                                <i class="fas fa-arrow-down me-1"></i> Expenses
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="incomes-tab" data-bs-toggle="tab" data-bs-target="#incomes" type="button">
+                                <i class="fas fa-arrow-up me-1"></i> Incomes
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="bills-tab" data-bs-toggle="tab" data-bs-target="#bills" type="button">
+                                <i class="fas fa-bell me-1"></i> Bills
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="transactionsTabContent">
+                        <div class="tab-pane fade show active" id="expenses" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Category</th>
+                                            <th>Description</th>
+                                            <th class="text-end">Amount</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="expenses-list">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="incomes" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Source</th>
+                                            <th>Description</th>
+                                            <th class="text-end">Amount</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="incomes-list">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="bills" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Due Date</th>
+                                            <th class="text-end">Amount</th>
+                                            <th>Status</th>
+                                            <th class="text-end">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bills-list">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -274,6 +376,8 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let deleteItemType, deleteItemId;
@@ -288,9 +392,78 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentMonth = new Date().toISOString().slice(0, 7);
     document.getElementById('budget-month').value = currentMonth;
     
+    // Toggle form visibility
+    document.querySelectorAll('.toggle-form').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const cardBody = this.closest('.card').querySelector('.card-body');
+            cardBody.classList.toggle('d-none');
+            this.innerHTML = cardBody.classList.contains('d-none') ? 
+                '<i class="fas fa-chevron-right"></i>' : '<i class="fas fa-chevron-down"></i>';
+        });
+    });
+    
     // Format currency
     function formatCurrency(amount) {
-        return 'Tsh ' + parseFloat(amount).toFixed(2);
+        return 'Tsh ' + parseFloat(amount).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+    
+    // Update summary cards
+    function updateSummaryCards() {
+        Promise.all([
+            fetch('/api/get_incomes').then(res => res.json()),
+            fetch('/api/get_expenses').then(res => res.json()),
+            fetch('/api/get_bills').then(res => res.json())
+        ]).then(([incomes, expenses, bills]) => {
+            // Calculate monthly totals
+            const now = new Date();
+            const thisMonth = now.getMonth();
+            const thisYear = now.getFullYear();
+            
+            const monthlyIncomes = Object.values(incomes).filter(income => {
+                const date = new Date(income.date);
+                return date.getMonth() === thisMonth && date.getFullYear() === thisYear;
+            }).reduce((sum, income) => sum + parseFloat(income.amount), 0);
+            
+            const monthlyExpenses = Object.values(expenses).filter(expense => {
+                const date = new Date(expense.date);
+                return date.getMonth() === thisMonth && date.getFullYear() === thisYear;
+            }).reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            
+            const totalBalance = monthlyIncomes - monthlyExpenses;
+            
+            // Count upcoming bills (due in next 7 days)
+            const upcomingBills = Object.values(bills).filter(bill => {
+                const dueDate = new Date(bill.due_date);
+                const today = new Date();
+                const sevenDaysFromNow = new Date();
+                sevenDaysFromNow.setDate(today.getDate() + 7);
+                return dueDate >= today && dueDate <= sevenDaysFromNow && !bill.paid;
+            }).length;
+            
+            // Update DOM
+            document.getElementById('total-balance').textContent = formatCurrency(totalBalance);
+            document.getElementById('monthly-income').textContent = formatCurrency(monthlyIncomes);
+            document.getElementById('monthly-expenses').textContent = formatCurrency(monthlyExpenses);
+            document.getElementById('upcoming-bills').textContent = upcomingBills;
+            
+            // Color code the balance
+            const balanceElement = document.getElementById('total-balance');
+            if (totalBalance < 0) {
+                balanceElement.classList.add('text-danger');
+                balanceElement.classList.remove('text-gray-800', 'text-success');
+            } else if (totalBalance > 0) {
+                balanceElement.classList.add('text-success');
+                balanceElement.classList.remove('text-gray-800', 'text-danger');
+            } else {
+                balanceElement.classList.add('text-gray-800');
+                balanceElement.classList.remove('text-success', 'text-danger');
+            }
+        }).catch(error => {
+            console.error('Error updating summary cards:', error);
+        });
     }
     
     // Load expenses
@@ -302,26 +475,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 const expenses = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 if (expenses.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">No expenses recorded</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No expenses recorded</td></tr>';
                 } else {
                     tbody.innerHTML = expenses.map(expense => `
                         <tr>
                             <td>${new Date(expense.date).toLocaleDateString()}</td>
-                            <td>${expense.category.charAt(0).toUpperCase() + expense.category.slice(1)}</td>
+                            <td><span class="badge bg-secondary">${expense.category.charAt(0).toUpperCase() + expense.category.slice(1)}</span></td>
                             <td>${expense.description || '-'}</td>
-                            <td class="text-danger">-${formatCurrency(expense.amount)}</td>
+                            <td class="text-end text-danger fw-bold">-${formatCurrency(expense.amount)}</td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-outline-danger delete-btn" data-type="expenses" data-id="${Object.keys(data).find(key => data[key] === expense)}">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </td>
                         </tr>
                     `).join('');
                 }
+                updateSummaryCards();
             })
             .catch(error => {
                 console.error('Error loading expenses:', error);
-                document.getElementById('expenses-list').innerHTML = '<tr><td colspan="5" class="text-center py-3 text-danger">Error loading expenses</td></tr>';
+                document.getElementById('expenses-list').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Error loading expenses</td></tr>';
             });
     }
     
@@ -334,26 +508,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 const incomes = Object.values(data).sort((a, b) => new Date(b.date) - new Date(a.date));
                 
                 if (incomes.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">No incomes recorded</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No incomes recorded</td></tr>';
                 } else {
                     tbody.innerHTML = incomes.map(income => `
                         <tr>
                             <td>${new Date(income.date).toLocaleDateString()}</td>
                             <td>${income.source}</td>
                             <td>${income.description || '-'}</td>
-                            <td class="text-success">+${formatCurrency(income.amount)}</td>
+                            <td class="text-end text-success fw-bold">+${formatCurrency(income.amount)}</td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-outline-danger delete-btn" data-type="incomes" data-id="${Object.keys(data).find(key => data[key] === income)}">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </td>
                         </tr>
                     `).join('');
                 }
+                updateSummaryCards();
             })
             .catch(error => {
                 console.error('Error loading incomes:', error);
-                document.getElementById('incomes-list').innerHTML = '<tr><td colspan="5" class="text-center py-3 text-danger">Error loading incomes</td></tr>';
+                document.getElementById('incomes-list').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Error loading incomes</td></tr>';
             });
     }
     
@@ -366,13 +541,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const bills = Object.values(data).sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
                 
                 if (bills.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3">No bills recorded</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No bills recorded</td></tr>';
                 } else {
                     tbody.innerHTML = bills.map(bill => `
                         <tr>
                             <td>${bill.name}</td>
                             <td>${new Date(bill.due_date).toLocaleDateString()}</td>
-                            <td>${formatCurrency(bill.amount)}</td>
+                            <td class="text-end fw-bold">${formatCurrency(bill.amount)}</td>
                             <td>
                                 <span class="badge ${bill.paid ? 'bg-success' : 'bg-warning'}">
                                     ${bill.paid ? 'Paid' : 'Pending'}
@@ -381,16 +556,17 @@ document.addEventListener('DOMContentLoaded', function() {
                             </td>
                             <td class="text-end">
                                 <button class="btn btn-sm btn-outline-danger delete-btn" data-type="bills" data-id="${Object.keys(data).find(key => data[key] === bill)}">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
                             </td>
                         </tr>
                     `).join('');
                 }
+                updateSummaryCards();
             })
             .catch(error => {
                 console.error('Error loading bills:', error);
-                document.getElementById('bills-list').innerHTML = '<tr><td colspan="5" class="text-center py-3 text-danger">Error loading bills</td></tr>';
+                document.getElementById('bills-list').innerHTML = '<tr><td colspan="5" class="text-center py-4 text-danger">Error loading bills</td></tr>';
             });
     }
     
@@ -643,9 +819,104 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Initialize all data
+    updateSummaryCards();
     loadExpenses();
     loadIncomes();
     loadBills();
 });
 </script>
+
+<style>
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    border-bottom: 1px solid #e3e6f0;
+    background: #fff;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.form-control, .form-select {
+    border-radius: 0.35rem;
+    border: 1px solid #d1d3e2;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #bac8f3;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.btn {
+    border-radius: 0.35rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 1rem 1.5rem;
+    color: #6e707e;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: #4e73df;
+    border-bottom-color: #4e73df;
+    background: transparent;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #6e707e;
+    padding: 1rem 0.75rem;
+}
+
+.table td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.75em;
+    padding: 0.35em 0.65em;
+}
+
+.toggle-form {
+    color: #6e707e;
+}
+
+.toggle-form:hover {
+    color: #4e73df;
+}
+
+.text-xs {
+    font-size: 0.7rem;
+}
+</style>
 {% endblock %}

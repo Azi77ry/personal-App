@@ -1,69 +1,151 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Spending by Category</h5>
-                <select class="form-select form-select-sm" id="category-period" style="width: auto;">
-                    <option value="month">This Month</option>
-                    <option value="year">This Year</option>
-                    <option value="all">All Time</option>
-                </select>
-            </div>
-            <div class="card-body">
-                <canvas id="categoryChart" height="300"></canvas>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Income vs Expenses</h5>
-                <select class="form-select form-select-sm" id="income-expense-period" style="width: auto;">
-                    <option value="month">This Month</option>
-                    <option value="year">This Year</option>
-                    <option value="all">All Time</option>
-                </select>
-            </div>
-            <div class="card-body">
-                <canvas id="incomeExpenseChart" height="300"></canvas>
+<div class="container-fluid">
+    <!-- Summary Cards Row -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Balance</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="total-balance">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Monthly Trends</h5>
-                <select class="form-select form-select-sm" id="trend-period" style="width: auto;">
-                    <option value="6">Last 6 Months</option>
-                    <option value="12" selected>Last 12 Months</option>
-                    <option value="24">Last 2 Years</option>
-                </select>
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Income (Monthly)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthly-income">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="monthlyTrendsChart" height="300"></canvas>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Expenses (Monthly)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="monthly-expenses">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Savings Rate</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="savings-rate">Loading...</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-percent fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Budget vs Actual</h5>
-                <select class="form-select form-select-sm" id="budget-period" style="width: auto;">
-                    <option value="current">Current Month</option>
-                    <option value="last">Last Month</option>
-                    <option value="quarter">This Quarter</option>
-                </select>
+
+    <!-- Charts Row 1 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Spending by Category</h6>
+                    <select class="form-select form-select-sm" id="category-period" style="width: auto;">
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small" id="category-legend">
+                        <!-- Dynamic legend will be inserted here -->
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <canvas id="budgetChart" height="300"></canvas>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-success">Income vs Expenses</h6>
+                    <select class="form-select form-select-sm" id="income-expense-period" style="width: auto;">
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                        <option value="all">All Time</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar pt-4 pb-2">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-info">Monthly Trends</h6>
+                    <select class="form-select form-select-sm" id="trend-period" style="width: auto;">
+                        <option value="6">Last 6 Months</option>
+                        <option value="12" selected>Last 12 Months</option>
+                        <option value="24">Last 2 Years</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area pt-4 pb-2">
+                        <canvas id="monthlyTrendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-warning">Budget vs Actual</h6>
+                    <select class="form-select form-select-sm" id="budget-period" style="width: auto;">
+                        <option value="current">Current Month</option>
+                        <option value="last">Last Month</option>
+                        <option value="quarter">This Quarter</option>
+                    </select>
+                </div>
+                <div class="card-body">
+                    <div class="chart-radar pt-4 pb-2">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -71,21 +153,46 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+
 <script>
+// Register plugins
+Chart.register(ChartDataLabels);
+Chart.register({
+    id: 'chartjs-plugin-annotation'
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Chart instances
     let categoryChart, incomeExpenseChart, monthlyTrendsChart, budgetChart;
     
-    // Colors for charts
-    const chartColors = [
-        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
-        '#9966FF', '#FF9F40', '#8AC24A', '#607D8B',
-        '#FF6B6B', '#48D1CC', '#FFA07A', '#7B68EE'
+    // Professional color palette
+    const chartColors = {
+        primary: '#4e73df',
+        success: '#1cc88a',
+        info: '#36b9cc',
+        warning: '#f6c23e',
+        danger: '#e74a3b',
+        secondary: '#858796',
+        dark: '#5a5c69',
+        light: '#f8f9fc'
+    };
+    
+    // Extended color palette for categories
+    const extendedColors = [
+        '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', 
+        '#858796', '#f8f9fc', '#5a5c69', '#2e59d9', '#17a673',
+        '#2c9faf', '#dda20a', '#be2617', '#656769', '#e3e6f0'
     ];
     
     // Format currency
     function formatCurrency(amount) {
-        return '$' + parseFloat(amount).toFixed(2);
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(amount);
     }
     
     // Get month name from index (0-11)
@@ -108,6 +215,58 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         return data.filter(item => new Date(item.date) >= startDate);
+    }
+    
+    // Update summary cards
+    function updateSummaryCards(incomes, expenses, period = 'month') {
+        const filteredIncomes = filterByPeriod(Object.values(incomes), period);
+        const filteredExpenses = filterByPeriod(Object.values(expenses), period);
+        
+        const totalIncome = filteredIncomes.reduce((sum, income) => sum + parseFloat(income.amount), 0);
+        const totalExpense = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+        const balance = totalIncome - totalExpense;
+        const savingsRate = totalIncome > 0 ? ((balance / totalIncome) * 100) : 0;
+        
+        document.getElementById('total-balance').textContent = formatCurrency(balance);
+        document.getElementById('monthly-income').textContent = formatCurrency(totalIncome);
+        document.getElementById('monthly-expenses').textContent = formatCurrency(totalExpense);
+        document.getElementById('savings-rate').textContent = savingsRate.toFixed(1) + '%';
+        
+        // Color code the balance
+        const balanceElement = document.getElementById('total-balance');
+        if (balance < 0) {
+            balanceElement.classList.add('text-danger');
+            balanceElement.classList.remove('text-gray-800', 'text-success');
+        } else if (balance > 0) {
+            balanceElement.classList.add('text-success');
+            balanceElement.classList.remove('text-gray-800', 'text-danger');
+        } else {
+            balanceElement.classList.add('text-gray-800');
+            balanceElement.classList.remove('text-success', 'text-danger');
+        }
+    }
+    
+    // Generate category legend
+    function generateCategoryLegend(labels, data, colors) {
+        let html = '<div class="row">';
+        
+        labels.forEach((label, i) => {
+            const percentage = Math.round((data[i] / data.reduce((a, b) => a + b, 0)) * 100);
+            html += `
+                <div class="col-6 mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-2" style="width: 12px; height: 12px; background-color: ${colors[i]}; border-radius: 2px;"></div>
+                        <div class="small" style="line-height: 1;">
+                            <div class="font-weight-bold">${label}</div>
+                            <div class="text-gray-600">${formatCurrency(data[i])} (${percentage}%)</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        return html;
     }
     
     // Load spending by category chart
@@ -134,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 const sortedCategories = sortedIndices.map(i => categories[i]);
                 const sortedAmounts = sortedIndices.map(i => amounts[i]);
-                const sortedColors = sortedIndices.map(i => chartColors[i % chartColors.length]);
+                const sortedColors = sortedIndices.map(i => extendedColors[i % extendedColors.length]);
                 
                 const ctx = document.getElementById('categoryChart').getContext('2d');
                 
@@ -142,21 +301,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     categoryChart.destroy();
                 }
                 
+                // Update legend
+                document.getElementById('category-legend').innerHTML = generateCategoryLegend(
+                    sortedCategories, sortedAmounts, sortedColors
+                );
+                
                 categoryChart = new Chart(ctx, {
-                    type: 'pie',
+                    type: 'doughnut',
                     data: {
                         labels: sortedCategories,
                         datasets: [{
                             data: sortedAmounts,
                             backgroundColor: sortedColors,
-                            borderWidth: 1
+                            borderWidth: 1,
+                            borderColor: '#fff'
                         }]
                     },
                     options: {
-                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
                         plugins: {
                             legend: {
-                                position: 'right'
+                                display: false
                             },
                             tooltip: {
                                 callbacks: {
@@ -167,6 +333,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                         const percentage = Math.round((value / total) * 100);
                                         return `${label}: ${formatCurrency(value)} (${percentage}%)`;
                                     }
+                                }
+                            },
+                            datalabels: {
+                                color: '#fff',
+                                font: {
+                                    weight: 'bold',
+                                    size: 10
+                                },
+                                formatter: (value, ctx) => {
+                                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return percentage > 5 ? `${percentage}%` : '';
                                 }
                             }
                         }
@@ -182,11 +360,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadIncomeExpenseChart(period = 'month') {
         Promise.all([
             fetch('/api/get_incomes').then(res => res.json()),
-            fetch('/api/get_expenses').then(res => res.json()),
-            fetch('/api/get_financial_summary').then(res => res.json())
-        ]).then(([incomes, expenses, summary]) => {
+            fetch('/api/get_expenses').then(res => res.json())
+        ]).then(([incomes, expenses]) => {
             const filteredIncomes = filterByPeriod(Object.values(incomes), period);
             const filteredExpenses = filterByPeriod(Object.values(expenses), period);
+            
+            updateSummaryCards(incomes, expenses, period);
             
             const totalIncome = filteredIncomes.reduce((sum, income) => sum + parseFloat(income.amount), 0);
             const totalExpense = filteredExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
@@ -205,28 +384,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: [{
                         label: 'Amount',
                         data: [totalIncome, totalExpense, balance],
-                        backgroundColor: ['#4BC0C0', '#FF6384', '#36A2EB'],
-                        borderWidth: 1
+                        backgroundColor: [chartColors.success, chartColors.danger, chartColors.primary],
+                        borderWidth: 0,
+                        borderRadius: 4,
+                        barPercentage: 0.6
                     }]
                 },
                 options: {
-                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
                             ticks: {
                                 callback: function(value) {
                                     return formatCurrency(value);
-                                }
+                                },
+                                maxTicksLimit: 6
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
                             }
                         }
                     },
                     plugins: {
+                        legend: {
+                            display: false
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
                                     return `${context.dataset.label}: ${formatCurrency(context.raw)}`;
                                 }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'end',
+                            color: '#5a5c69',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: (value) => {
+                                return formatCurrency(value);
                             }
                         }
                     }
@@ -306,30 +510,47 @@ document.addEventListener('DOMContentLoaded', function() {
                         {
                             label: 'Income',
                             data: incomeData,
-                            borderColor: '#4BC0C0',
-                            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                            borderColor: chartColors.success,
+                            backgroundColor: 'rgba(28, 200, 138, 0.05)',
                             fill: true,
-                            tension: 0.3
+                            tension: 0.3,
+                            pointBackgroundColor: chartColors.success,
+                            pointBorderColor: '#fff',
+                            pointRadius: 3,
+                            pointHoverRadius: 5
                         },
                         {
                             label: 'Expenses',
                             data: expenseData,
-                            borderColor: '#FF6384',
-                            backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                            borderColor: chartColors.danger,
+                            backgroundColor: 'rgba(231, 74, 59, 0.05)',
                             fill: true,
-                            tension: 0.3
+                            tension: 0.3,
+                            pointBackgroundColor: chartColors.danger,
+                            pointBorderColor: '#fff',
+                            pointRadius: 3,
+                            pointHoverRadius: 5
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            },
                             ticks: {
                                 callback: function(value) {
                                     return formatCurrency(value);
-                                }
+                                },
+                                maxTicksLimit: 6
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
                             }
                         }
                     },
@@ -422,27 +643,31 @@ document.addEventListener('DOMContentLoaded', function() {
                         {
                             label: 'Budget',
                             data: budgetValues,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            pointBackgroundColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                            borderColor: chartColors.primary,
+                            pointBackgroundColor: chartColors.primary,
                             pointBorderColor: '#fff',
                             pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgba(75, 192, 192, 1)'
+                            pointHoverBorderColor: chartColors.primary,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
                         },
                         {
                             label: 'Actual',
                             data: actualValues,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(231, 74, 59, 0.1)',
+                            borderColor: chartColors.danger,
+                            pointBackgroundColor: chartColors.danger,
                             pointBorderColor: '#fff',
                             pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+                            pointHoverBorderColor: chartColors.danger,
+                            pointRadius: 3,
+                            pointHoverRadius: 5
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
                         r: {
                             angleLines: {
@@ -452,7 +677,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             ticks: {
                                 callback: function(value) {
                                     return formatCurrency(value);
-                                }
+                                },
+                                maxTicksLimit: 5
                             }
                         }
                     },
@@ -497,4 +723,60 @@ document.addEventListener('DOMContentLoaded', function() {
     loadBudgetChart();
 });
 </script>
+
+<style>
+.card {
+    border: none;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.card-header {
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.chart-area, .chart-bar, .chart-pie, .chart-radar {
+    position: relative;
+    height: 20rem;
+}
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.form-select {
+    border-radius: 0.35rem;
+    border: 1px solid #d1d3e2;
+}
+
+.form-select:focus {
+    border-color: #bac8f3;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+</style>
 {% endblock %}
