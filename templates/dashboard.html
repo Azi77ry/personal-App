@@ -294,6 +294,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return ((current - previous) / previous) * 100;
     }
     
+
+
+    
     // Load financial summary
     function loadFinancialSummary() {
         Promise.all([
@@ -368,11 +371,15 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             // Calculate and display upcoming bills
-            const nowDate = new Date();
-            const upcomingBills = Object.values(bills).filter(bill => {
-                const dueDate = new Date(bill.due_date);
-                return dueDate >= nowDate && !bill.paid;
-            });
+           // In the loadFinancialSummary function, replace the upcomingBills filter:
+const nowDate = new Date();
+nowDate.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+
+const upcomingBills = Object.values(bills).filter(bill => {
+    const dueDate = new Date(bill.due_date);
+    dueDate.setHours(0, 0, 0, 0);
+    return dueDate >= nowDate && !bill.paid;
+});
             
             document.getElementById('upcoming-bills-count').textContent = upcomingBills.length;
             
@@ -385,132 +392,136 @@ document.addEventListener('DOMContentLoaded', function() {
             loadTopIncomeSources(incomes);
             loadTopExpenseCategories(expenses);
             loadFinancialHealthMetrics(incomes, expenses);
+            // After the financial summary is loaded, also load events and tasks
+            loadUpcomingEvents();
+            loadPendingTasks();
+
         }).catch(error => {
             console.error('Error loading financial summary:', error);
         });
     }
     
     // Load upcoming events
-    function loadUpcomingEvents() {
-        fetch('/api/get_events')
-            .then(response => response.json())
-            .then(events => {
-                const container = document.getElementById('upcoming-events-list');
+    // Load upcoming events (similar to events.html but simplified for dashboard)
+function loadUpcomingEvents() {
+    fetch('/api/get_events')
+        .then(response => response.json())
+        .then(events => {
+            const container = document.getElementById('upcoming-events-list');
+            
+            if (Object.keys(events).length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted">No upcoming events</div>';
+                return;
+            }
+            
+            // Get current date
+            const now = new Date();
+            
+            // Filter and sort events (next 7 days)
+            const upcomingEvents = Object.values(events)
+                .filter(event => new Date(event.start) >= now)
+                .sort((a, b) => new Date(a.start) - new Date(b.start))
+                .slice(0, 3); // Show only 3 upcoming events
+            
+            if (upcomingEvents.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted">No upcoming events</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            upcomingEvents.forEach(event => {
+                const startDate = new Date(event.start);
+                const endDate = event.end ? new Date(event.end) : null;
                 
-                if (Object.keys(events).length === 0) {
-                    container.innerHTML = '<div class="text-center py-4 text-muted">No upcoming events</div>';
-                    return;
-                }
-                
-                // Get current date
-                const now = new Date();
-                
-                // Filter and sort events (next 7 days)
-                const upcomingEvents = Object.values(events)
-                    .filter(event => new Date(event.start) >= now)
-                    .sort((a, b) => new Date(a.start) - new Date(b.start))
-                    .slice(0, 3); // Show only 3 upcoming events
-                
-                if (upcomingEvents.length === 0) {
-                    container.innerHTML = '<div class="text-center py-4 text-muted">No upcoming events</div>';
-                    return;
-                }
-                
-                let html = '';
-                
-                upcomingEvents.forEach(event => {
-                    const startDate = new Date(event.start);
-                    const endDate = event.end ? new Date(event.end) : null;
-                    
-                    html += `
-                        <div class="list-group-item border-0">
-                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                <h6 class="mb-1 text-truncate">${event.title}</h6>
-                                <small class="text-muted">${startDate.toLocaleDateString()}</small>
-                            </div>
-                            <p class="mb-1 small text-truncate">${startDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} 
-                            ${endDate ? `- ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}` : ''}</p>
-                            <small class="text-muted text-truncate d-block">${event.description || 'No description'}</small>
+                html += `
+                    <div class="list-group-item border-0">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1 text-truncate">${event.title}</h6>
+                            <small class="text-muted">${startDate.toLocaleDateString()}</small>
                         </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Error loading events:', error);
-                document.getElementById('upcoming-events-list').innerHTML = '<div class="text-center py-4 text-danger">Error loading events</div>';
+                        <p class="mb-1 small text-truncate">${startDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} 
+                        ${endDate ? `- ${endDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}` : ''}</p>
+                        <small class="text-muted text-truncate d-block">${event.description || 'No description'}</small>
+                    </div>
+                `;
             });
-    }
-    
-    // Load pending tasks
-    function loadPendingTasks() {
-        fetch('/api/get_tasks')
-            .then(response => response.json())
-            .then(tasks => {
-                const container = document.getElementById('pending-tasks-list');
+            
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading events:', error);
+            container.innerHTML = '<div class="text-center py-4 text-danger">Error loading events</div>';
+        });
+}
+
+// Load pending tasks (similar to events.html but simplified for dashboard)
+function loadPendingTasks() {
+    fetch('/api/get_tasks')
+        .then(response => response.json())
+        .then(tasks => {
+            const container = document.getElementById('pending-tasks-list');
+            
+            if (Object.keys(tasks).length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
+                return;
+            }
+            
+            // Filter pending tasks (not completed)
+            const pendingTasks = Object.values(tasks)
+                .filter(task => !task.completed)
+                .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
+                .slice(0, 3); // Show only 3 tasks
+            
+            if (pendingTasks.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
+                return;
+            }
+            
+            let html = '';
+            
+            pendingTasks.forEach(task => {
+                const dueDate = new Date(task.due_date);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
                 
-                if (Object.keys(tasks).length === 0) {
-                    container.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
-                    return;
+                let dueText = dueDate.toLocaleDateString();
+                let textClass = 'text-muted';
+                
+                if (dueDate < today) {
+                    textClass = 'text-danger';
+                    dueText = 'Overdue';
+                } else if (dueDate.getDate() === today.getDate() && 
+                           dueDate.getMonth() === today.getMonth() && 
+                           dueDate.getFullYear() === today.getFullYear()) {
+                    textClass = 'text-warning';
+                    dueText = 'Due today';
                 }
                 
-                // Filter pending tasks (not completed)
-                const pendingTasks = Object.values(tasks)
-                    .filter(task => !task.completed)
-                    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date))
-                    .slice(0, 3); // Show only 3 tasks
-                
-                if (pendingTasks.length === 0) {
-                    container.innerHTML = '<div class="text-center py-4 text-muted">No pending tasks</div>';
-                    return;
-                }
-                
-                let html = '';
-                
-                pendingTasks.forEach(task => {
-                    const dueDate = new Date(task.due_date);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    
-                    let dueText = dueDate.toLocaleDateString();
-                    let textClass = 'text-muted';
-                    
-                    if (dueDate < today) {
-                        textClass = 'text-danger';
-                        dueText = 'Overdue';
-                    } else if (dueDate.getDate() === today.getDate() && 
-                               dueDate.getMonth() === today.getMonth() && 
-                               dueDate.getFullYear() === today.getFullYear()) {
-                        textClass = 'text-warning';
-                        dueText = 'Due today';
-                    }
-                    
-                    html += `
-                        <div class="list-group-item border-0">
-                            <div class="d-flex w-100 justify-content-between align-items-center">
-                                <h6 class="mb-1 text-truncate">${task.name}</h6>
-                                <small class="${textClass}">${dueText}</small>
-                            </div>
-                            <p class="mb-1 small">
-                                Priority: 
-                                <span class="badge bg-${task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'}">
-                                    ${task.priority}
-                                </span>
-                            </p>
-                            <small class="text-muted text-truncate d-block">${task.description || 'No description'}</small>
+                html += `
+                    <div class="list-group-item border-0">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1 text-truncate">${task.name}</h6>
+                            <small class="${textClass}">${dueText}</small>
                         </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Error loading tasks:', error);
-                document.getElementById('pending-tasks-list').innerHTML = '<div class="text-center py-4 text-danger">Error loading tasks</div>';
+                        <p class="mb-1 small">
+                            Priority: 
+                            <span class="badge bg-${task.priority === 'high' ? 'danger' : task.priority === 'medium' ? 'warning' : 'secondary'}">
+                                ${task.priority}
+                            </span>
+                        </p>
+                        <small class="text-muted text-truncate d-block">${task.description || 'No description'}</small>
+                    </div>
+                `;
             });
-    }
-    
+            
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading tasks:', error);
+            container.innerHTML = '<div class="text-center py-4 text-danger">Error loading tasks</div>';
+        });
+} 
     // Load recent transactions
     function loadRecentTransactions() {
         Promise.all([
@@ -1002,8 +1013,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize all dashboard components
     loadFinancialSummary();
-    loadUpcomingEvents();
-    loadPendingTasks();
     loadRecentTransactions();
 });
 </script>
